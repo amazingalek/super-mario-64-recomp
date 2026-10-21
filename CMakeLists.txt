@@ -56,7 +56,8 @@ add_subdirectory(${CMAKE_SOURCE_DIR}/lib/N64ModernRuntime)
 
 target_include_directories(rt64 PRIVATE ${CMAKE_BINARY_DIR}/rt64/src)
 
-# RecompiledFuncs: the game's code, from N64Recomp us.toml (tools/recompile.sh)
+# RecompiledFuncs: the game's code, from N64Recomp us.toml, and its audio microcode, from RSPRecomp aspMain.us.toml
+# (tools/recompile.sh)
 add_library(RecompiledFuncs STATIC)
 
 target_compile_options(RecompiledFuncs PRIVATE
@@ -64,6 +65,10 @@ target_compile_options(RecompiledFuncs PRIVATE
     -Wno-unused-variable
     -Wno-implicit-function-declaration
 )
+# The microcode's vector unit (librecomp's rsp_vu_impl.hpp) uses SSE4.1 on x86-64, as the program does.
+if (CMAKE_SIZEOF_VOID_P EQUAL 8 AND CMAKE_SYSTEM_PROCESSOR MATCHES "x86_64|amd64|AMD64")
+    target_compile_options(RecompiledFuncs PRIVATE -march=nehalem)
+endif()
 
 target_include_directories(RecompiledFuncs PRIVATE
     ${CMAKE_SOURCE_DIR}/include
