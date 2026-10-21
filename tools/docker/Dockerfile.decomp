@@ -1,0 +1,12 @@
+# The decomp's own build image (lib/sm64/Dockerfile) plus hexdump, which its Makefile runs on the sound banks and
+# Ubuntu 18.04 keeps in bsdmainutils.
+FROM ubuntu:18.04
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+        binutils-mips-linux-gnu \
+        bsdmainutils \
+        build-essential \
+        git \
+        pkgconf \
+        python3 && \
+    rm -rf /var/lib/apt/lists/*

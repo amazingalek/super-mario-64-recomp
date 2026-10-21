@@ -1,0 +1,41 @@
+# N64Recomp's configuration for Super Mario 64 (USA), SHA-1 9bef1128717f958171a4afac3ed78ee2bb4e86ce: it reads the
+# game's code out of the ROM by the symbols tools/gen_syms.sh dumps from the decomp's ELF, and writes
+# RecompiledFuncs/ (tools/recompile.sh). The code is stored raw in the ROM, so there is nothing to decompress first.
+[input]
+# The decomp's entry_point (asm/entry.s).
+entrypoint = 0x80246000
+# Paths are relative to this file.
+symbols_file_path = "syms/sm64.us.syms.toml"
+rom_file_path = "roms/sm64.us.z64"
+output_func_path = "RecompiledFuncs"
+use_absolute_symbols = true
+
+[patches]
+# Functions recompiled as empty ones.
+stubs = [
+    # Never called (src/audio/external.c): it reads a global into $zero, which N64Recomp writes as an assignment to 0,
+    # which doesn't compile.
+    "unused_8031E568",
+    # libultra's debugger (lib/src/kdebugserver.c), reached only from the exception handler, which isn't recompiled:
+    # they call send and string_to_u32, which N64Recomp leaves out.
+    "process_command_memory",
+    "process_command_register",
+    # The debugger's printf output (lib/src/__osSyncPutChars.c), which calls __osGetCause.
+    "__osSyncPutChars",
+    # Never called (src/game/main.c), and calls __d_to_ull.
+    "unused_get_elapsed_time",
+]
+
+# The global labels inside libultra's exception handler (lib/asm/__osExceptionPreamble.s), which tools/gen_syms.py
+# sizes as functions. N64Recomp already leaves out the handler itself (the runtime takes the place of interrupts and
+# threads), and these use cop0 registers it can't recompile.
+ignored = [
+    "counter",
+    "cart",
+    "rcp",
+    "prenmi",
+    "sw2",
+    "sw1",
+    "redispatch",
+    "panic",
+]
