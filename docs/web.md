@@ -76,7 +76,7 @@ Each ends with the game's own frame rate over its courses (`rate()`). Play them 
 
 ## The shader list
 
-`src/rt64_shaders.txt` holds 187 shaders, which RT64 builds as 140 pipelines, in 34 sections (a shader is in each
+`src/rt64_shaders.txt` holds 189 shaders, which RT64 builds as 141 pipelines, in 34 sections (a shader is in each
 section that draws it): the boot's (the launcher, the logo, the title's Mario head, the file select), the castle
 grounds', and one for each place in about the order a player meets it: the castle's floors room by room, the
 courtyard, the 15 courses at the start of each of their first six acts and in their other areas, the secret stages,
@@ -149,10 +149,11 @@ the defaults first:
   copies none.
 - MS Anti-Aliasing: 343.3 and 80%, against 345.5 and 79% with None.
 
-Hi-res Font (On by default) makes its textures on the page as on the desktop, into the app folder, which the page keeps
-in the browser's IndexedDB: a first visit upscales the text as it meets it (about 90 textures over the regular plan), a
-later one loads them. The regular plan played with it On, in Chrome and Firefox at 3840x2000, makes them with no WebGPU
-error and no exception.
+Hi-res Font is Original by default, on the page as on the desktop (the game's own pixel art), and On on the Graphics
+tab. On, it makes its textures on the page as on the desktop, into the app folder, which the page keeps in the
+browser's IndexedDB: a first visit upscales the text as it meets it (about 90 textures over the regular plan), a later
+one loads them. The regular plan played with it On, in Chrome and Firefox at 3840x2000, makes them with no WebGPU error
+and no exception.
 
 Framerate and Resolution weren't measured: every page interpolates to the display's rate and draws at the canvas's size
 (N64Recomp-browser's CLAUDE.md), which the defaults, Display and Auto, are.
@@ -169,8 +170,8 @@ The part for `docs/game-forks.md`, after the last game's:
 > the N64Recomp-browser tag its `lib/N64Recomp-browser` pins, with `frontend/build_speed.cmake`. Its patches (MIPS C
 > against the decomp's headers) tag every matrix for RT64's interpolation, widen the view, the HUD and the sky to the
 > window's shape, and keep a few modern options, each with an Original value; the page keeps them all at the desktop's
-> defaults, which cost it nothing measured. Render to RAM is off: the game never reads a frame it drew. Its list is 187
-> shaders: the boot (the launcher, the logo, the title's Mario head, the file select, 28) and 33 sections (the castle
+> defaults, which cost it nothing measured. Render to RAM is off: the game never reads a frame it drew. Its list is 189
+> shaders: the boot (the launcher, the logo, the title's Mario head, the file select, 29) and 33 sections (the castle
 > grounds, the castle's floors, the courtyard, the 15 courses at each act, the secret and Bowser stages), recorded by
 > `tools/shader_plan.json`, which warps Mario into each from the castle grounds through the survey in
 > `patches/shader_survey.c`. IDO narrows a char or short argument in the

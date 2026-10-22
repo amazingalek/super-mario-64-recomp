@@ -2,7 +2,8 @@
 // game's own enhancements on the Graphics tab. Each enhancement has an Original value that plays as the console does
 // (README, Modern enhancements). RecompFrontend's own Graphics options carry the rest: Resolution and MS Anti-Aliasing
 // (high resolution), Framerate (interpolation to the display's rate), Aspect Ratio and HUD Placement (widescreen,
-// patches/widescreen.c). Hi-res Font is src/game/hires_font.cpp.
+// patches/widescreen.c). Hi-res Font is src/game/hires_font.cpp, the one enhancement that defaults to Original (the
+// game's own pixel art), with On on the menu.
 
 #include <atomic>
 #include <filesystem>
@@ -135,7 +136,7 @@ void sm64::init_config() {
         "<br/>"
         "<b>On:</b> smooth at any resolution. <b>Original:</b> the game's own texels, as blocks at high resolution.",
         hires_font_options,
-        HiresFont::On
+        HiresFont::Original
     );
     graphics.add_option_change_callback(hires_font_option,
         [](recomp::config::ConfigValueVariant cur_value, recomp::config::ConfigValueVariant, recomp::config::OptionChangeContext) {

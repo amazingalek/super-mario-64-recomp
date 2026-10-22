@@ -34,10 +34,12 @@
 # Bob-omb Battlefield in Chrome, two of the title's and the file select's text in both browsers once Hi-res Font sets the
 # text tiles to clamp (src/game/hires_font.cpp), which changes their sampler flags, five that the levels' recordings
 # missed and their plays drew (a death exit's fade into a castle room, two; Bowser in the Fire Sea's key, two; the start
-# of Bowser in the Sky) and two of Mario with the vanish cap. At the end of their own sections, those of a play of every
-# level with shots: Bowser in the Fire Sea's six (Bowser fading as he teleports), one each in the basement and the second
-# floor as Mario leaves Hazy Maze Cave and Tiny-Huge Island, one at Dire, Dire Docks' floor into its second area, and one
-# of the castle's first floor in Firefox.
+# of Bowser in the Sky), two of Mario with the vanish cap, and one of the file select's text with Hi-res Font Original,
+# the default (its tiles' wrap, where On clamps them: a text shader is in the list both ways). At the end of their own
+# sections, those of a play of every level with shots: Bowser in the Fire Sea's six (Bowser fading as he teleports), one
+# each in the basement and the second floor as Mario leaves Hazy Maze Cave and Tiny-Huge Island, one at Dire, Dire
+# Docks' floor into its second area, and one of the castle's first floor in Firefox; and one of the regular plan's
+# Bob-omb Battlefield in Firefox.
 00552078 00882c3f fc127e24 fffff9fc 088a000c
 00552078 00882c3f fcffffff fffe793c 0800000c
 005041c8 00882c3f fcffffff fffcfa7d 0ccb540c
@@ -66,6 +68,7 @@ c8112078 00982c3f fcffffff fffcf838 088a0008
 004049d8 00882c3f fc121a24 ff37ffff 0ccb5408
 005049db 00882c3f fc147e28 44fe7b3d 0ccb540c
 005049db 00882c3f fcffffff fffe7b3d 0800000c
+005041c9 00a02c3f fcffffff fffe793c 008a000b
 section grounds
 0f0a4000 00882c3f fc127e24 fffff9fc 0ccb540c
 00552078 00882c3f fc127e24 fffff9fc 0ccb540c
@@ -150,6 +153,7 @@ c8113078 00982c3f fcffffff fffcf238 088a000c
 0f0a7008 00880c3f fcffffff fffcf279 0ccb540c
 005041c9 00a00c3f fcffffff fffcf279 04cb540b
 00552048 00880c3f fcffffff fffe793c 0800000c
+005049d8 00882c3f fcff9bff ff34fe7f 0ccb540c
 section wf
 005049d8 00882c3f fcffffff fffe7b3d 0800000c
 00552078 00882c3f fc127e24 fffff9fc 099b1004
