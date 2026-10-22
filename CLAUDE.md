@@ -63,7 +63,33 @@ This repo is the game: its recompilation, the patches over it, the desktop build
 - **The entry point** is the decomp's `entry_point` at 0x80246000. `us.toml` ignores the labels inside libultra's
   exception handler, which use cop0 registers.
 - **Microcodes.** Graphics: f3d_old, Fast3D 2.0D (`rsp/fast3d.s`), which RT64 knows by its hash as F3D_SM64 and
-  draws as F3D, as it does Pilotwings 64's and Wave Race 64's. Audio: aspMain, not recompiled yet: the program runs
-  audio tasks as a no-op, so the game is silent.
+  draws as F3D, as it does Pilotwings 64's and Wave Race 64's. Audio: aspMain, libultra's standard audio microcode,
+  recompiled by RSPRecomp from `aspMain.us.toml` (its header says how its layout and handler table were found).
+  librecomp's vector unit uses SSE4.1, so `RecompiledFuncs` builds with `-march=nehalem` on x86-64.
+- **Jump tables.** N64Recomp finds all of the game's itself (147, each a `switch` in `RecompiledFuncs/`, and
+  `recomp.log` names no unresolved `jr`), so `us.toml` lists none by hand.
+- **Saves.** EEPROM, 4 Kbit: the decomp's `save_file.h` has `EEPROM_SIZE` 0x200 and `save_file.c` asserts the save
+  buffer is exactly that. `main.cpp` declares `SaveType::Eep4k`; the runtime keeps it in
+  `saves/sm64.n64.us.1.0.bin`, in the game's own byte order, and writes it a moment after the game saves, so a test
+  waits a few seconds before it stops the game.
+- **Input.** RecompFrontend's default bindings, nothing of the game's own. Keyboard: WASD the stick, Space A, Left
+  Shift B, Q Z, R R, E L, Enter Start, the arrows the C buttons. A gamepad: the left stick, the south button A, the
+  west one B, the left trigger Z, the right trigger R, the left bumper L, Start, and the right stick for the C
+  buttons (or north, east, the right stick's click and the right bumper for C left, right, up and down).
+- **Testing without the speakers.** `main.cpp` asks SDL for WASAPI only when `SDL_AUDIODRIVER` isn't set, so a test
+  records the game's sound with SDL's disk driver (`SDL_AUDIODRIVER=disk`, `SDL_DISKAUDIOFILE=<file>`: F32 stereo at
+  48 kHz). On Windows that driver runs slow, about 0.92 of real time: it sleeps 5 ms per 5.33 ms buffer, and the
+  sleeps overrun. The game makes its sound to the device's clock within 16 samples a frame, so a slow device shows
+  up as skipped samples (`queue_samples` drops some above 100 ms queued). To keep real time, point
+  `SDL_DISKAUDIOFILE` at a named pipe that the test reads at 48000 frames a second, with the delay off. Because
+  SDL 2.30's `SDL_getenv` on Windows returns one shared buffer, `SDL_DISKAUDIODELAY` must hold the same text as the
+  file name (its `atoi` is 0). Any other value replaces the file name, and SDL writes to a file named by it as fast
+  as it can.
+- **Driving it from a test.** A test that plays by posting `WM_KEYDOWN`/`WM_KEYUP` to the game's window (it reaches
+  the game whether or not the window has focus) can't hold Left Shift, so B never registers: at every event pump
+  SDL2 on Windows releases Left Shift if `GetKeyState(VK_LSHIFT)` says it is up, which is its fix for lost shift
+  key-ups, and a posted message never sets that state. Such a test gives B a second key in the checkout's
+  `controls.json` (`{"keyboard": {"B": [{"input_type": 1, "input_id": 225}, {"input_type": 1, "input_id": 27}]}}`
+  keeps Left Shift and adds X; an input the file leaves out keeps its default) and presses that.
 - **The game's own pacing**: 30 frames a second, two VIs a frame, triple-buffered. It yields its graphics task for
   audio (osSpTaskYield), which the runtime ignores.

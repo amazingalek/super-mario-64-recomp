@@ -1,0 +1,31 @@
+# RSPRecomp's configuration for Super Mario 64 (USA)'s audio microcode, aspMain: the standard 16-command libultra one
+# (the decomp's rsp/audio.s). Graphics tasks go to RT64; the audio tasks the game sends need this microcode recompiled
+# to run (src/main/main.cpp, get_rsp_microcode). tools/recompile.sh writes it into RecompiledFuncs/.
+#
+# It is byte for byte the aspMain of Pilotwings 64 (USA) and Wave Race 64 (USA, Rev A), whose recompilations worked
+# out its layout; checked here over all 0xE20 bytes of text and the 0x2C0 bytes of data, the command table included.
+#
+# - The text is rspAspMainStart..rspAspMainEnd in the decomp (syms/sm64.us.datasyms.toml), VRAM 0x8032C740 to
+#   0x8032D560 in the main segment, which sits at ROM 0x1000 for VRAM 0x80246000: ROM 0xE7740, 0xE20 bytes.
+# - text_address is the IMEM address it runs at. rspboot takes the first 0x80 bytes of IMEM and loads the task's
+#   microcode after itself, so it is 0x04001080, not 0x04001000: at 0x1000 every jump lands 0x80 bytes early and the
+#   first audio task never ends.
+# - The command handlers are reached through a table in the data segment (`lh $2, 0x10($2)`, then `jr $2`), which
+#   RSPRecomp can't find by following the instructions, so they are listed below. Read from the data's 16 halfwords
+#   at offset 0x10 (rspAspMainDataStart 0x8033A2C0, ROM 0xF52D0).
+
+rom_file_path = "roms/sm64.us.z64"
+text_offset = 0xE7740
+text_size = 0xE20
+text_address = 0x04001080
+
+# C++, not C: the output includes librecomp's RSP header. CMakeLists.txt builds RecompiledFuncs/*.cpp with the game.
+output_file_path = "RecompiledFuncs/aspMain_rsp.cpp"
+output_function_name = "aspMain_run"
+
+extra_indirect_branch_targets = [
+    0x1118, 0x1470, 0x11DC, 0x1B38,
+    0x1214, 0x187C, 0x1254, 0x12D0,
+    0x12EC, 0x1328, 0x140C, 0x1294,
+    0x1E24, 0x138C, 0x170C, 0x144C,
+]

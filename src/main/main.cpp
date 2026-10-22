@@ -251,16 +251,13 @@ void reset_audio(uint32_t output_freq) {
     update_audio_converter();
 }
 
-// The audio microcode (aspMain) isn't recompiled yet: its tasks end at once and leave the game's output buffers as
-// they were, silent.
-static RspExitReason silent_audio_ucode(uint8_t*, uint32_t) {
-    return RspExitReason::Broke;
-}
+// The audio microcode, recompiled by RSPRecomp from aspMain.us.toml (tools/recompile.sh). Graphics tasks go to RT64.
+extern RspUcodeFunc aspMain_run;
 
 RspUcodeFunc* get_rsp_microcode(const OSTask* task) {
     switch (task->t.type) {
     case M_AUDTASK:
-        return silent_audio_ucode;
+        return aspMain_run;
     default:
         fprintf(stderr, "Unknown task: %" PRIu32 "\n", task->t.type);
         return nullptr;
@@ -388,8 +385,9 @@ int main(int argc, char** argv) {
 #ifdef _WIN32
     timeBeginPeriod(1);
     SetConsoleOutputCP(CP_UTF8);
-    // wasapi; directsound has had sample queueing issues.
-    SDL_setenv("SDL_AUDIODRIVER", "wasapi", true);
+    // wasapi; directsound has had sample queueing issues. One already set wins, so a test can record the game's sound
+    // with SDL's disk driver (SDL_AUDIODRIVER=disk, SDL_DISKAUDIOFILE) instead of playing it.
+    SDL_setenv("SDL_AUDIODRIVER", "wasapi", false);
 #endif
 
     NFD_Init();
