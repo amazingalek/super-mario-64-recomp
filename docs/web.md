@@ -76,7 +76,7 @@ Each ends with the game's own frame rate over its courses (`rate()`). Play them 
 
 ## The shader list
 
-`src/rt64_shaders.txt` holds 187 shaders, which RT64 builds as 140 pipelines, in 34 sections (a shader is in each
+`src/rt64_shaders.txt` holds 189 shaders, which RT64 builds as 141 pipelines, in 34 sections (a shader is in each
 section that draws it): the boot's (the launcher, the logo, the title's Mario head, the file select), the castle
 grounds', and one for each place in about the order a player meets it: the castle's floors room by room, the
 courtyard, the 15 courses at the start of each of their first six acts and in their other areas, the secret stages,
@@ -170,8 +170,8 @@ The part for `docs/game-forks.md`, after the last game's:
 > the N64Recomp-browser tag its `lib/N64Recomp-browser` pins, with `frontend/build_speed.cmake`. Its patches (MIPS C
 > against the decomp's headers) tag every matrix for RT64's interpolation, widen the view, the HUD and the sky to the
 > window's shape, and keep a few modern options, each with an Original value; the page keeps them all at the desktop's
-> defaults, which cost it nothing measured. Render to RAM is off: the game never reads a frame it drew. Its list is 187
-> shaders: the boot (the launcher, the logo, the title's Mario head, the file select, 28) and 33 sections (the castle
+> defaults, which cost it nothing measured. Render to RAM is off: the game never reads a frame it drew. Its list is 189
+> shaders: the boot (the launcher, the logo, the title's Mario head, the file select, 29) and 33 sections (the castle
 > grounds, the castle's floors, the courtyard, the 15 courses at each act, the secret and Bowser stages), recorded by
 > `tools/shader_plan.json`, which warps Mario into each from the castle grounds through the survey in
 > `patches/shader_survey.c`. IDO narrows a char or short argument in the
