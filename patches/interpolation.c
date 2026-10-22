@@ -1,6 +1,7 @@
 #include "patches.h"
 #include "rt64_extended_gbi.h"
 
+#include "dialog_ids.h"
 #include "buffers/buffers.h"
 #include "buffers/gfx_output_buffer.h"
 #include "engine/graph_node.h"
@@ -8,6 +9,7 @@
 #include "game/area.h"
 #include "game/game_init.h"
 #include "game/geo_misc.h"
+#include "game/ingame_menu.h"
 #include "game/memory.h"
 #include "game/object_list_processor.h"
 #include "game/rendering_graph_node.h"
@@ -41,6 +43,8 @@
 //   is unwrapped (sSkyWraps) to blend across the wrap.
 // - The HUD (render_dl_power_meter): the power meter slides in and out by a matrix of its own. The rest of the HUD is
 //   text and rectangles at fixed places.
+// - Dialogs and menus (render_menus_and_dialogs): a matrix per letter, all one group paired in drawing order, its id
+//   changed by whatever changes that order. Untagged, RT64 paired a letter with another drawn with the same texture.
 // - Warp transitions (render_screen_transition): the shrinking or growing star or circle of a door, a painting or a pipe
 //   is vertices the game moves each frame, so its group blends vertices too.
 // - The display list pool (select_gfx_pool): each tagged list costs three commands more, so the pool is 4 times the
@@ -607,6 +611,68 @@ RECOMP_PATCH s32 render_screen_transition(s8 fadeTimer, s8 transType, u8 transTi
     }
     gEXPopMatrixGroup(gDisplayListHead++, G_MTX_MODELVIEW);
     return done;
+}
+
+// The dialogs and menus (ingame_menu.c): a box, then a matrix per letter, each a translation multiplied onto the last.
+// Untagged, RT64 pairs a letter with any letter of the older frame drawn with the same texture, so of a line's two o's
+// each could be blended toward the other and draw between the two, on another letter or out of sight. Here they are one
+// group paired in the order they are drawn, and what changes that order (another dialog or menu, its state, page, scroll
+// or cursor line) changes the id, so that frame is drawn as it is.
+#define MENUS_ID 0x4D454E55 // "MENU"
+
+extern s16 gMenuMode;
+extern s16 gDialogID;
+extern s8 gMenuState;
+extern s8 gMenuLineNum;
+extern s16 gDialogPageStartStrIndex;
+extern s16 gDialogScrollOffsetY;
+s16 render_pause_screen(void);
+s16 render_course_complete_screen(void);
+void print_peach_letter_message(void);
+void render_dialog_entries(void);
+
+static u32 menus_id(void) {
+    return make_id(MENUS_ID, ((u32) (u16) gMenuMode << 16) | (u16) gDialogID,
+                   ((u32) (u8) gMenuState << 24) ^ ((u32) (u8) gMenuLineNum << 16) ^
+                       ((u32) (u16) gDialogPageStartStrIndex << 8) ^ (u16) gDialogScrollOffsetY);
+}
+
+// The game's, inside the group.
+RECOMP_PATCH s16 render_menus_and_dialogs(void) {
+    s16 index = MENU_OPT_NONE;
+
+    create_dl_ortho_matrix();
+    gEXMatrixGroupTagged(gDisplayListHead++, menus_id(), G_MTX_MODELVIEW);
+
+    if (gMenuMode != MENU_MODE_NONE) {
+        switch (gMenuMode) {
+            case MENU_MODE_UNUSED_0:
+                index = render_pause_screen();
+                break;
+            case MENU_MODE_RENDER_PAUSE_SCREEN:
+                index = render_pause_screen();
+                break;
+            case MENU_MODE_RENDER_COURSE_COMPLETE_SCREEN:
+                index = render_course_complete_screen();
+                break;
+            case MENU_MODE_UNUSED_3:
+                index = render_course_complete_screen();
+                break;
+        }
+
+        gMenuTextColorTransTimer = (s16) gMenuTextColorTransTimer + 0x1000;
+    } else if (gDialogID != DIALOG_NONE) {
+        // The Peach "Dear Mario" message needs to be repositioned separately
+        if (gDialogID == DIALOG_020) {
+            print_peach_letter_message();
+        } else {
+            render_dialog_entries();
+            gMenuTextColorTransTimer = (s16) gMenuTextColorTransTimer + 0x1000;
+        }
+    }
+
+    gEXPopMatrixGroup(gDisplayListHead++, G_MTX_MODELVIEW);
+    return index;
 }
 
 // The display list pool: the game's two GfxPools keep their tasks, the lists go here.
