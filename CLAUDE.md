@@ -120,6 +120,12 @@ This repo is the game: its recompilation, the patches over it, the desktop build
     castle bridge, the letters of "reporting live from just" that repeat elsewhere drew blank or as another letter in 8
     to 17 of 24 captures, though every frame's list was the same. Tagged as one group in drawing order, none did, in
     24 captures of that line and 40 through its page turn.
+  - The title's Mario head is goddard's own list, a matrix per part of the head and per sparkle of the star cursor.
+    Paired in drawing order inside the generated node's group, its face was blended toward another part or a sparkle
+    as the sparkles came and went: in about 6 of the first 16 captures of the title left alone at 4K, the skin, cap and
+    hair were missing or squashed and the eyes, brows and mustache drew alone, and in 6 and 10 of 20 shots of the page
+    in two plays in Chrome. Framerate Original drew it whole in all 16. As a group of its own that RT64 pairs by its
+    guess (G_EX_ORDER_AUTO), it drew whole in all 21 captures, and in all 20 shots of the page in Chrome and in Firefox.
   - The skybox shows no uncovered edge through a full turn, and the door's star or circle wipe grows in half steps.
     Colour fades (the fade from white into a course) step at 30 as on a console: RT64 blends geometry, not colour.
 - **Widescreen** (`patches/widescreen.c`, its header lists every place). RT64's Aspect Ratio Expand widens every

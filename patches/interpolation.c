@@ -45,6 +45,8 @@
 //   text and rectangles at fixed places.
 // - Dialogs and menus (render_menus_and_dialogs): a matrix per letter, all one group paired in drawing order, its id
 //   changed by whatever changes that order. Untagged, RT64 paired a letter with another drawn with the same texture.
+// - Goddard's Mario head (geo_draw_mario_head_goddard): goddard's own list, a matrix per part of the head and per
+//   sparkle of the star cursor, is a group of its own paired by RT64's guess, since the sparkles change its order.
 // - Warp transitions (render_screen_transition): the shrinking or growing star or circle of a door, a painting or a pipe
 //   is vertices the game moves each frame, so its group blends vertices too.
 // - The display list pool (select_gfx_pool): each tagged list costs three commands more, so the pool is 4 times the
@@ -684,6 +686,53 @@ RECOMP_PATCH s16 render_menus_and_dialogs(void) {
 
     gEXPopMatrixGroup(gDisplayListHead++, G_MTX_MODELVIEW);
     return index;
+}
+
+// Goddard's Mario head (the title and the game over screen). Goddard builds its own list, a matrix for each part of the
+// head and for each sparkle the star cursor trails, and the sparkles come and go among the parts. In the group
+// geo_append_display_list gives the list, paired in drawing order, a part was blended toward another part or a sparkle
+// as their number changed: the face drawn off screen or squashed, its eyes and mustache alone in its place. Here the
+// list is a group of its own that RT64 pairs by its guess (G_EX_ORDER_AUTO): each matrix with the closest of the older
+// frame's drawn alike.
+#define GODDARD_ID 0x474F4444 // "GODD"
+
+extern void (*gGoddardVblankCallback)(void);
+Gfx *gdm_gettestdl(s32 id);
+void gd_vblank(void);
+void gd_copy_p1_contpad(OSContPad *p1cont);
+s32 gd_sfx_to_play(void);
+void play_menu_sounds(s16 soundMenuFlags);
+
+// The game's, its list inside the group.
+RECOMP_PATCH Gfx *geo_draw_mario_head_goddard(s32 callContext, struct GraphNode *node, UNUSED Mat4 *c) {
+    Gfx *gfx = NULL;
+    Gfx *head;
+    struct GraphNodeGenerated *asGenerated = (struct GraphNodeGenerated *) node;
+
+    if (callContext == GEO_CONTEXT_RENDER) {
+        if (gPlayer1Controller->controllerData != NULL && !gWarpTransition.isActive) {
+            gd_copy_p1_contpad(gPlayer1Controller->controllerData);
+        }
+        head = (Gfx *) PHYSICAL_TO_VIRTUAL(gdm_gettestdl(asGenerated->parameter));
+        gGoddardVblankCallback = gd_vblank;
+        play_menu_sounds(gd_sfx_to_play());
+
+        gfx = alloc_display_list(5 * sizeof(Gfx));
+        if (gfx != NULL) {
+            Gfx *g = gfx;
+            gEXMatrixGroupDecomposed(g++, make_id(GODDARD_ID, asGenerated->parameter, sCutCount), G_EX_PUSH,
+                                     G_MTX_MODELVIEW, G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_INTERPOLATE,
+                                     G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_INTERPOLATE,
+                                     G_EX_COMPONENT_SKIP, G_EX_COMPONENT_AUTO, G_EX_ORDER_AUTO, G_EX_EDIT_NONE,
+                                     G_EX_COMPONENT_SKIP, G_EX_COMPONENT_AUTO);
+            gSPDisplayList(g++, head);
+            gEXPopMatrixGroup(g++, G_MTX_MODELVIEW);
+            gSPEndDisplayList(g++);
+        } else {
+            gfx = head;
+        }
+    }
+    return gfx;
 }
 
 // The display list pool: the game's two GfxPools keep their tasks, the lists go here.
