@@ -12,6 +12,7 @@
 #include "game/object_list_processor.h"
 #include "game/rendering_graph_node.h"
 #include "game/save_file.h"
+#include "game/screen_transition.h"
 #include "game/segment2.h"
 #include "game/skybox.h"
 
@@ -40,6 +41,8 @@
 //   is unwrapped (sSkyWraps) to blend across the wrap.
 // - The HUD (render_dl_power_meter): the power meter slides in and out by a matrix of its own. The rest of the HUD is
 //   text and rectangles at fixed places.
+// - Warp transitions (render_screen_transition): the shrinking or growing star or circle of a door, a painting or a pipe
+//   is vertices the game moves each frame, so its group blends vertices too.
 // - The display list pool (select_gfx_pool): each tagged list costs three commands more, so the pool is 4 times the
 //   game's, in the patches' memory. Every frame's list starts with gEXEnable, which the commands above need.
 
@@ -561,6 +564,49 @@ RECOMP_PATCH void render_dl_power_meter(s16 numHealthWedges) {
 
     gSPPopMatrix(gDisplayListHead++, G_MTX_MODELVIEW);
     gEXPopMatrixGroup(gDisplayListHead++, G_MTX_MODELVIEW);
+}
+
+// The warp transitions: a star, circle, Mario or Bowser shaped hole that shrinks or grows, made of vertices the game
+// moves each frame under one fixed matrix, so its group blends the vertices themselves (the same count every frame).
+#define TRANSITION_ID 0x5452414E // "TRAN"
+
+s32 render_fade_transition_from_color(s8 fadeTimer, u8 transTime, struct WarpTransitionData *transData);
+s32 render_fade_transition_into_color(s8 fadeTimer, u8 transTime, struct WarpTransitionData *transData);
+s32 render_textured_transition(s8 fadeTimer, s8 transTime, struct WarpTransitionData *transData, s8 texID, s8 transTexType);
+
+RECOMP_PATCH s32 render_screen_transition(s8 fadeTimer, s8 transType, u8 transTime, struct WarpTransitionData *transData) {
+    s32 done = 0;
+
+    gEXMatrixGroupDecomposed(gDisplayListHead++, TRANSITION_ID, G_EX_PUSH, G_MTX_MODELVIEW, G_EX_COMPONENT_INTERPOLATE,
+                             G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_INTERPOLATE,
+                             G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_AUTO,
+                             G_EX_ORDER_LINEAR, G_EX_EDIT_NONE, G_EX_COMPONENT_SKIP, G_EX_COMPONENT_AUTO);
+    switch (transType) {
+        case WARP_TRANSITION_FADE_FROM_COLOR:
+            done = render_fade_transition_from_color(fadeTimer, transTime, transData);
+            break;
+        case WARP_TRANSITION_FADE_INTO_COLOR:
+            done = render_fade_transition_into_color(fadeTimer, transTime, transData);
+            break;
+        case WARP_TRANSITION_FADE_FROM_STAR:
+        case WARP_TRANSITION_FADE_INTO_STAR:
+            done = render_textured_transition(fadeTimer, transTime, transData, TEX_TRANS_STAR, TRANS_TYPE_MIRROR);
+            break;
+        case WARP_TRANSITION_FADE_FROM_CIRCLE:
+        case WARP_TRANSITION_FADE_INTO_CIRCLE:
+            done = render_textured_transition(fadeTimer, transTime, transData, TEX_TRANS_CIRCLE, TRANS_TYPE_MIRROR);
+            break;
+        case WARP_TRANSITION_FADE_FROM_MARIO:
+        case WARP_TRANSITION_FADE_INTO_MARIO:
+            done = render_textured_transition(fadeTimer, transTime, transData, TEX_TRANS_MARIO, TRANS_TYPE_CLAMP);
+            break;
+        case WARP_TRANSITION_FADE_FROM_BOWSER:
+        case WARP_TRANSITION_FADE_INTO_BOWSER:
+            done = render_textured_transition(fadeTimer, transTime, transData, TEX_TRANS_BOWSER, TRANS_TYPE_MIRROR);
+            break;
+    }
+    gEXPopMatrixGroup(gDisplayListHead++, G_MTX_MODELVIEW);
+    return done;
 }
 
 // The display list pool: the game's two GfxPools keep their tasks, the lists go here.
