@@ -456,7 +456,8 @@ RECOMP_PATCH Gfx *create_skybox_facing_camera(s8 player, s8 background, f32 fov,
     f32 cameraFaceY = focY - posY;
     f32 cameraFaceZ = focZ - posZ;
     s8 colorIndex = 1;
-    s32 dlCommandCount = 5 + (SKYBOX_GRID * SKYBOX_GRID) * 7;
+    s32 dlCommandCount;
+    s32 columns;
     Gfx *skybox;
     Gfx *dlist;
     Mtx *ortho;
@@ -493,6 +494,10 @@ RECOMP_PATCH Gfx *create_skybox_facing_camera(s8 player, s8 background, f32 fov,
     sSkyLastX = scrollX;
     scrollY = sSkyBoxInfo[player].scaledY;
 
+    // The game's top left tile is the one at the scroll; the ring starts one before it, and a screen wider than 4:3
+    // (widescreen.c) needs more columns.
+    columns = widescreen_sky_columns(scrollX, &firstCol);
+    dlCommandCount = 5 + (SKYBOX_GRID * columns) * 7;
     skybox = alloc_display_list(dlCommandCount * sizeof(Gfx));
     ortho = alloc_display_list(sizeof(*ortho));
     if (skybox == NULL || ortho == NULL) {
@@ -505,14 +510,12 @@ RECOMP_PATCH Gfx *create_skybox_facing_camera(s8 player, s8 background, f32 fov,
     gSPMatrix(dlist++, VIRTUAL_TO_PHYSICAL(ortho), G_MTX_PROJECTION | G_MTX_MUL | G_MTX_NOPUSH);
     gSPDisplayList(dlist++, dl_skybox_tile_tex_settings);
 
-    // The game's top left tile is the one at the scroll; the ring starts one before it.
-    firstCol = (s32) (scrollX / SKYBOX_TILE_WIDTH) - (scrollX < 0.0f ? 1 : 0) - 1;
     firstRow = (SKYBOX_HEIGHT - (s32) scrollY) / SKYBOX_TILE_HEIGHT - 1;
     for (row = firstRow; row < firstRow + SKYBOX_GRID; row++) {
         if (row < 0 || row >= SKYBOX_ROWS) {
             continue;
         }
-        for (col = firstCol; col < firstCol + SKYBOX_GRID; col++) {
+        for (col = firstCol; col < firstCol + columns; col++) {
             s32 texCol = ((col % 8) + 8) % 8;
             const u8 *const texture =
                 (*(SkyboxTexture *) segmented_to_virtual(sSkyboxTextures[background]))[row * SKYBOX_COLS + texCol];
