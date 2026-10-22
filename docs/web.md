@@ -134,4 +134,3 @@ The Games table's row, its page where `tools/publish_page.sh` would put it. The 
 ```
 | Super Mario 64 | this project's own recomp | [super-mario-64-recomp](https://github.com/amazingalek/super-mario-64-recomp) | [play](https://amazingalek.github.io/super-mario-64-recomp/) | 356* | 352* | 2026-10-22, v0.86.0 |
 ```
-
