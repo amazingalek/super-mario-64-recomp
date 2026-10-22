@@ -145,11 +145,14 @@ This repo is the game: its recompilation, the patches over it, the desktop build
 - **Input lag** (`patches/enhancements.c`). The game triple-buffers and swaps to the frame drawn the frame before
   (`sRenderedFramebuffer`); Reduced swaps to the one just sent. RT64 presents a swap after the task that draws it, so
   nothing tears.
-- **Hi-res Font** (`src/game/hires_font.cpp`, its header says how). The game makes its own texture pack from the ROM
+- **Hi-res Font** (`src/game/hires_font.cpp`, its header says how), Original by default (the game's own pixel art) and
+  On as the option, the one enhancement whose default is Original. On, the game makes its own texture pack from the ROM
   as it plays: each frame's list is walked, every texture drawn inside the game's text and HUD lists is hashed as RT64
   hashes it, and a new one is upscaled 4x with xBRZ into `hires_font/` in the app folder, a built-in pack
   (`runtime-patches/RecompFrontend-0001`). That folder is ROM-derived: never in git (`.gitignore`), CI or a page's
-  `.data`. Its textures are made the first time each is drawn, so a test that wants the first-launch path deletes it.
-  While it is on, the text lists' render tiles are set to clamp in RDRAM: RT64 samples a replacement with a linear
-  filter, and through the game's wrap a pixel-wide line of the letter's far edge showed down the side of a dialog
-  letter. A pack made with another scaler or scale needs a new `pack_version`.
+  `.data`. Its textures are made the first time each is drawn, so a test that wants the first-launch path turns it On
+  and deletes the folder. While it is on, the text lists' render tiles are set to clamp in RDRAM: RT64 samples a
+  replacement with a linear filter, and through the game's wrap a pixel-wide line of the letter's far edge showed down
+  the side of a dialog letter. The clamp changes those shaders' sampler flags, so the page's shader list holds the
+  text's shaders both ways (`src/rt64_shaders.txt`'s header). A pack made with another scaler or scale needs a new
+  `pack_version`.

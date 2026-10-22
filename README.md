@@ -26,9 +26,9 @@ the game as it shipped.
 
 - **High resolution**: renders at the window's size, up to 4K and beyond, instead of 320×240, with 2× MSAA. The 3D,
   the fades and the wipes are sharp at any size.
-- **Hi-res text**: the HUD's numbers and icons, the power meter, and the letters of the dialogs, the pause screen, the
-  act select and the file select are drawn smooth at any size instead of as the game's own pixel art, where at 4K each
-  texel is a block of about 9×9 pixels. Nothing is shipped for it: the game upscales each of these textures four times
+- **Hi-res text**, off by default (Hi-res Font On turns it on): the HUD's numbers and icons, the power meter, and the
+  letters of the dialogs, the pause screen, the act select and the file select are drawn smooth at any size instead of
+  as the game's own pixel art, where at 4K each texel is a block of about 9×9 pixels. Nothing is shipped for it: the game upscales each of these textures four times
   from your ROM (with xBRZ, a pixel-art scaler) the first time it draws it, and keeps the result in a `hires_font`
   folder beside its settings, so a new letter shows as the original for one frame, once.
 - **Smooth motion at the display's rate**: RT64 interpolates between the game's frames up to the monitor's refresh
@@ -59,7 +59,7 @@ is closed. For the game exactly as it shipped, set every Original value:
 | Widescreen | Aspect Ratio | `graphics.json` `ar_option` | `"Expand"` (the window's) | `"Original"` (4:3) |
 | Widescreen HUD | HUD Placement | `graphics.json` `hr_option` | `"Clamp16x9"` (out to 16:9's edges; `"Expand"`: the window's) | `"Original"` (4:3's edges) |
 | Rendering resolution | Resolution | `graphics.json` `res_option` | `"Auto"` (the window's size) | `"Original"` (320×240) |
-| Hi-res text | Hi-res Font | `graphics.json` `hires_font` | `"On"` | `"Original"` (the game's pixel art) |
+| Hi-res text | Hi-res Font | `graphics.json` `hires_font` | `"Original"` (the game's pixel art; `"On"`: smooth) | `"Original"` |
 | Anti-aliasing | MS Anti-Aliasing | `graphics.json` `msaa_option` | `"MSAA2X"` | `"None"` |
 | Model detail | Level of Detail | `graphics.json` `level_of_detail` | `"High"` (4× the distances; `"Highest"`: always the most detailed) | `"Original"` |
 | No frame copies to RAM | Copy Frames to RAM | `graphics.json` `copy_frames_to_ram` | `"Off"` (takes effect on the next start) | `"Original"` (every frame copied) |

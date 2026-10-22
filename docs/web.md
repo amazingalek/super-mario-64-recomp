@@ -149,10 +149,11 @@ the defaults first:
   copies none.
 - MS Anti-Aliasing: 343.3 and 80%, against 345.5 and 79% with None.
 
-Hi-res Font (On by default) makes its textures on the page as on the desktop, into the app folder, which the page keeps
-in the browser's IndexedDB: a first visit upscales the text as it meets it (about 90 textures over the regular plan), a
-later one loads them. The regular plan played with it On, in Chrome and Firefox at 3840x2000, makes them with no WebGPU
-error and no exception.
+Hi-res Font is Original by default, on the page as on the desktop (the game's own pixel art), and On on the Graphics
+tab. On, it makes its textures on the page as on the desktop, into the app folder, which the page keeps in the
+browser's IndexedDB: a first visit upscales the text as it meets it (about 90 textures over the regular plan), a later
+one loads them. The regular plan played with it On, in Chrome and Firefox at 3840x2000, makes them with no WebGPU error
+and no exception.
 
 Framerate and Resolution weren't measured: every page interpolates to the display's rate and draws at the canvas's size
 (N64Recomp-browser's CLAUDE.md), which the defaults, Display and Auto, are.
