@@ -49,18 +49,18 @@ namespace {
     const std::string copy_frames_to_ram_option = "copy_frames_to_ram";
 
     // Read on the game thread every frame (src/game/recomp_api.cpp).
-    std::atomic<bool> reduced_input_lag{ true };
-    std::atomic<uint32_t> level_of_detail{ static_cast<uint32_t>(LevelOfDetail::High) };
+    std::atomic<bool> reduced_input_lag_setting{ true };
+    std::atomic<uint32_t> level_of_detail_setting{ static_cast<uint32_t>(LevelOfDetail::High) };
 }
 
 bool sm64::reduced_input_lag() {
-    return reduced_input_lag.load(std::memory_order_relaxed);
+    return reduced_input_lag_setting.load(std::memory_order_relaxed);
 }
 
 uint32_t sm64::level_of_detail_divisor() {
     // The distance a level-of-detail switch compares is divided by this: High picks each model at 4 times the game's
     // distance, Highest always the nearest one (a distance of 0 is inside every closest range the game draws).
-    switch (static_cast<LevelOfDetail>(level_of_detail.load(std::memory_order_relaxed))) {
+    switch (static_cast<LevelOfDetail>(level_of_detail_setting.load(std::memory_order_relaxed))) {
         case LevelOfDetail::High:
             return 4;
         case LevelOfDetail::Highest:
@@ -97,7 +97,7 @@ void sm64::init_config() {
     // Called on load too, and while the menu previews a change.
     graphics.add_option_change_callback(input_lag_option,
         [](recomp::config::ConfigValueVariant cur_value, recomp::config::ConfigValueVariant, recomp::config::OptionChangeContext) {
-            reduced_input_lag = static_cast<InputLag>(std::get<uint32_t>(cur_value)) == InputLag::Reduced;
+            reduced_input_lag_setting = static_cast<InputLag>(std::get<uint32_t>(cur_value)) == InputLag::Reduced;
         });
 
     graphics.add_enum_option(
@@ -112,7 +112,7 @@ void sm64::init_config() {
     );
     graphics.add_option_change_callback(level_of_detail_option,
         [](recomp::config::ConfigValueVariant cur_value, recomp::config::ConfigValueVariant, recomp::config::OptionChangeContext) {
-            level_of_detail = std::get<uint32_t>(cur_value);
+            level_of_detail_setting = std::get<uint32_t>(cur_value);
         });
 
     // The game never reads a frame back from memory (no screen samples a framebuffer, nothing writes into one), so

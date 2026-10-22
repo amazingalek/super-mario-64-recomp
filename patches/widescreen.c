@@ -141,13 +141,29 @@ static void align_labels(s32 first, u32 origin) {
     }
 }
 
+// A rectangle aligned to an edge past 4:3 is still clipped by the game's scissor, which RT64 keeps on the 4:3 middle,
+// so while the HUD draws aligned the scissor is the whole window: set_rect_origin from NONE pushes it, back to NONE pops.
+static u32 sRectOrigin = G_EX_ORIGIN_NONE;
+
 static void set_rect_origin(u32 origin) {
+    if (origin == sRectOrigin) {
+        return;
+    }
+    if (sRectOrigin == G_EX_ORIGIN_NONE) {
+        gEXPushScissor(gDisplayListHead++);
+        gEXSetScissor(gDisplayListHead++, G_SC_NON_INTERLACE, G_EX_ORIGIN_LEFT, G_EX_ORIGIN_RIGHT, 0, 0, 0,
+                      SCREEN_HEIGHT);
+    }
     if (origin == G_EX_ORIGIN_RIGHT) {
         gEXSetRectAlign(gDisplayListHead++, G_EX_ORIGIN_RIGHT, G_EX_ORIGIN_RIGHT, -SCREEN_WIDTH * 4, 0,
                         -SCREEN_WIDTH * 4, 0);
     } else {
         gEXSetRectAlign(gDisplayListHead++, origin, origin, 0, 0, 0, 0);
     }
+    if (origin == G_EX_ORIGIN_NONE) {
+        gEXPopScissor(gDisplayListHead++);
+    }
+    sRectOrigin = origin;
 }
 
 // hud.c, the game's, with its labels aligned.
@@ -249,7 +265,6 @@ RECOMP_PATCH void render_text_labels(void) {
     s32 j;
     s8 glyphIndex;
     Mtx *mtx;
-    u32 origin = G_EX_ORIGIN_NONE;
 
     if (sTextLabelsCount == 0) {
         return;
@@ -271,12 +286,7 @@ RECOMP_PATCH void render_text_labels(void) {
     gSPDisplayList(gDisplayListHead++, dl_hud_img_begin);
 
     for (i = 0; i < sTextLabelsCount; i++) {
-        u32 labelOrigin = i < 52 ? sLabelOrigin[i] : G_EX_ORIGIN_NONE;
-
-        if (labelOrigin != origin) {
-            origin = labelOrigin;
-            set_rect_origin(origin);
-        }
+        set_rect_origin(i < 52 ? sLabelOrigin[i] : G_EX_ORIGIN_NONE);
         for (j = 0; j < sTextLabels[i]->length; j++) {
             glyphIndex = char_to_glyph_index(sTextLabels[i]->buffer[j]);
 
@@ -291,9 +301,7 @@ RECOMP_PATCH void render_text_labels(void) {
             sLabelOrigin[i] = G_EX_ORIGIN_NONE;
         }
     }
-    if (origin != G_EX_ORIGIN_NONE) {
-        set_rect_origin(G_EX_ORIGIN_NONE);
-    }
+    set_rect_origin(G_EX_ORIGIN_NONE);
 
     gSPDisplayList(gDisplayListHead++, dl_hud_img_end);
 
