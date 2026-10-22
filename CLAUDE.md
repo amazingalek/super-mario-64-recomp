@@ -85,5 +85,11 @@ This repo is the game: its recompilation, the patches over it, the desktop build
   SDL 2.30's `SDL_getenv` on Windows returns one shared buffer, `SDL_DISKAUDIODELAY` must hold the same text as the
   file name (its `atoi` is 0). Any other value replaces the file name, and SDL writes to a file named by it as fast
   as it can.
+- **Driving it from a test.** A test that plays by posting `WM_KEYDOWN`/`WM_KEYUP` to the game's window (it reaches
+  the game whether or not the window has focus) can't hold Left Shift, so B never registers: at every event pump
+  SDL2 on Windows releases Left Shift if `GetKeyState(VK_LSHIFT)` says it is up, which is its fix for lost shift
+  key-ups, and a posted message never sets that state. Such a test gives B a second key in the checkout's
+  `controls.json` (`{"keyboard": {"B": [{"input_type": 1, "input_id": 225}, {"input_type": 1, "input_id": 27}]}}`
+  keeps Left Shift and adds X; an input the file leaves out keeps its default) and presses that.
 - **The game's own pacing**: 30 frames a second, two VIs a frame, triple-buffered. It yields its graphics task for
   audio (osSpTaskYield), which the runtime ignores.

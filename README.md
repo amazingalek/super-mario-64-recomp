@@ -13,7 +13,9 @@ and menus): the game's own MIPS code translated to C and run natively, with RT64
 **This repo is private for now**, and it holds no ROM, no asset from the game and no data extracted from it: you
 supply your own ROM, and nothing in git or CI is made from one except the symbol names and addresses in `syms/`.
 
-**Status:** the desktop build boots through the launcher to the title screen. No sound yet.
+**Status:** the desktop build plays: sound (the audio microcode recompiled), saves (EEPROM, kept across restarts) and
+keyboard and gamepad input. Bob-omb Battlefield has been played from the file select through King Bob-omb's star and
+back to the castle. No web page yet.
 
 ## Building
 
