@@ -1,5 +1,6 @@
 #include "patches.h"
 #include "rt64_extended_gbi.h"
+#include "sm64.h"
 
 #include "engine/graph_node.h"
 #include "engine/math_util.h"
@@ -31,6 +32,7 @@
 // - The fades, the pause screen's shade and the cannon's circle widened to cover the window, the star, circle, Mario
 //   and Bowser wipes starting and ending at a radius that covers it, and the pause screen's red coins at the HUD's edge.
 // - The skybox: interpolation.c draws as many columns of its tiles as the width needs (sky_columns below).
+// - The title screen's and the game over screen's tiled backdrop, carried out to the window's edges with more columns.
 //
 // At 4:3, or with Aspect Ratio Original, every one of these draws as the game does: the aspect is 4:3 and each check
 // below falls through to the game's own code.
@@ -131,7 +133,7 @@ RECOMP_PATCH s32 obj_is_in_view(struct GraphNodeObject *node, Mat4 matrix) {
 // The HUD. Its text is queued by print_text and drawn by render_text_labels at the end of the frame, so each label
 // keeps the edge it was printed for. An origin aligns a rectangle to that edge of the window: its x is then counted
 // from the edge (from the right one, 320 to the left of it), so the game's own numbers stay.
-static u32 sLabelOrigin[52];
+static u32 sLabelOrigin[52] = { [0 ... 51] = G_EX_ORIGIN_NONE };
 
 static void align_labels(s32 first, u32 origin) {
     s32 i;
@@ -442,4 +444,108 @@ RECOMP_PATCH void render_pause_red_coins(void) {
     for (x = 0; x < gRedCoinsCollected; x++) {
         print_animated_red_coin(right - 30 - x * 20, 16);
     }
+}
+
+// intro_geo.c: the tiled backdrop behind Mario's face on the title screen and the game over screen, 4 columns of 80
+// units and 3 rows. Past 4:3 more columns are drawn each side, each a copy of the edge tile of its row (on the game
+// over screen they turn into the title's along with it). The game's intro_backdrop_one_image places tile <index> at
+// xCoords[index], so each extra tile is drawn with that entry moved for the call.
+struct GraphNodeMore {
+    struct GraphNode node;
+    void *todo;
+    u32 unk18;
+};
+extern s8 *introBackgroundTables[];
+extern s8 gameOverBackgroundTable[12];
+extern s32 sGameOverFrameCounter;
+extern s32 sGameOverTableIndex;
+extern s8 flipOrder[12];
+extern f32 xCoords[12];
+Gfx *intro_backdrop_one_image(s32 index, s8 *backgroundTable);
+
+#define INTRO_BACKGROUND_SUPER_MARIO 0
+#define INTRO_BACKGROUND_GAME_OVER 1
+#define TITLE_BG_BEGIN ((Gfx *) 0x0A000100)
+#define TITLE_BG_END ((Gfx *) 0x0A000190)
+
+static Gfx *draw_backdrop(s8 *backgroundTable) {
+    f32 aspect = widescreen_aspect();
+    s32 sideColumns = 0;
+    Gfx *dl;
+    Gfx *dlIter;
+    s32 i;
+    s32 c;
+
+    if (aspect > ASPECT_4_3) {
+        sideColumns = (s32) ((SCREEN_HEIGHT / 2 * aspect - SCREEN_WIDTH / 2) / 80.0f) + 1;
+    }
+
+    dl = alloc_display_list((4 + 12 + sideColumns * 6) * sizeof(*dl));
+    if (dl == NULL) {
+        return NULL;
+    }
+    dlIter = dl;
+    gSPDisplayList(dlIter++, &dl_proj_mtx_fullscreen);
+    gSPDisplayList(dlIter++, TITLE_BG_BEGIN);
+    for (i = 0; i < 12; i++) {
+        gSPDisplayList(dlIter++, intro_backdrop_one_image(i, backgroundTable));
+    }
+    for (c = 1; c <= sideColumns; c++) {
+        for (i = 0; i < 12; i += 4) {
+            f32 left = xCoords[i];
+            f32 right = xCoords[i + 3];
+
+            xCoords[i] = -80.0f * c;
+            gSPDisplayList(dlIter++, intro_backdrop_one_image(i, backgroundTable));
+            xCoords[i] = left;
+            xCoords[i + 3] = SCREEN_WIDTH - 80.0f + 80.0f * c;
+            gSPDisplayList(dlIter++, intro_backdrop_one_image(i + 3, backgroundTable));
+            xCoords[i + 3] = right;
+        }
+    }
+    gSPDisplayList(dlIter++, TITLE_BG_END);
+    gSPEndDisplayList(dlIter);
+    return dl;
+}
+
+// The game's, with the backdrop drawn by draw_backdrop.
+RECOMP_PATCH Gfx *geo_intro_regular_backdrop(s32 state, struct GraphNode *node, UNUSED void *context) {
+    struct GraphNodeMore *graphNode = (struct GraphNodeMore *) node;
+    s32 index = graphNode->unk18 & 0xff;
+
+    if (state == 1) {
+        graphNode->node.flags = (graphNode->node.flags & 0xFF) | (LAYER_OPAQUE << 8);
+        return draw_backdrop(introBackgroundTables[index]);
+    }
+    return NULL;
+}
+
+RECOMP_PATCH Gfx *geo_intro_gameover_backdrop(s32 state, struct GraphNode *node, UNUSED void *context) {
+    s32 i;
+
+    if (state != 1) {
+        sGameOverFrameCounter = 0;
+        sGameOverTableIndex = -2;
+        for (i = 0; i < 12; i++) {
+            gameOverBackgroundTable[i] = INTRO_BACKGROUND_GAME_OVER;
+        }
+        return NULL;
+    }
+
+    if (sGameOverTableIndex == -2) {
+        if (sGameOverFrameCounter == 180) {
+            sGameOverTableIndex++;
+            sGameOverFrameCounter = 0;
+        }
+    } else {
+        if (sGameOverTableIndex != 11 && !(sGameOverFrameCounter & 0x1)) {
+            sGameOverTableIndex++;
+            gameOverBackgroundTable[flipOrder[sGameOverTableIndex]] = INTRO_BACKGROUND_SUPER_MARIO;
+        }
+    }
+    if (sGameOverTableIndex != 11) {
+        sGameOverFrameCounter++;
+    }
+    node->flags = (node->flags & 0xFF) | (LAYER_OPAQUE << 8);
+    return draw_backdrop(gameOverBackgroundTable);
 }

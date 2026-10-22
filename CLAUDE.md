@@ -31,8 +31,9 @@ This repo is the game: its recompilation, the patches over it, the desktop build
 - The decomp is built only where the ROM is, never in CI.
 - The repo is private. Until it goes public nothing public names or links it, CI is Linux only, and there are no
   releases or Pages.
-- The scope is the game as it plays plus what a web page needs (RT64 interpolation to the display's rate, resolution
-  Auto): no widescreen, camera, cheats or other enhancements. USA 1.0 only.
+- The scope is the game as it plays, plus what a web page needs (RT64 interpolation to the display's rate, resolution
+  Auto), plus the README's Modern enhancements: each an option with an Original value that plays as the console does,
+  none changing how the game plays. No camera changes, cheats or 60 fps logic. USA 1.0 only.
 - Write for a stranger, in the present tense: nothing about a contributor's machine, servers, paths or accounts, and
   nothing about where anyone keeps ROMs.
 - GPL-3.0, as the recompilations it follows.
@@ -111,3 +112,20 @@ This repo is the game: its recompilation, the patches over it, the desktop build
     24 captures of that line and 40 through its page turn.
   - The skybox shows no uncovered edge through a full turn, and the door's star or circle wipe grows in half steps.
     Colour fades (the fade from white into a course) step at 30 as on a console: RT64 blends geometry, not colour.
+- **Widescreen** (`patches/widescreen.c`, its header lists every place). RT64's Aspect Ratio Expand widens every
+  full-screen projection by itself, hor+ about the middle, and stretches a fill or texture rectangle as wide as the
+  scissor; the rest is the game's own code at the places the decomp's `GFX_DIMENSIONS` macros mark, reading the aspect
+  ratio at run time (`recomp_get_aspect_ratio`, 4:3 under Original, so every patch falls through to the game's code).
+  The HUD's rectangles are aligned to the window's edges with `gEXSetRectAlign`, and while they are the scissor is the
+  window's (`gEXSetScissor` with LEFT and RIGHT origins, pushed and popped): the game's own 320-wide scissor is kept on
+  the 4:3 middle, and a rectangle aligned past it draws clipped to it, a sliver or nothing. A label's origin defaults
+  to NONE, not 0 (LEFT): text drawn at the window's edge on a screen that clears only its 4:3 (the title) stays there.
+- **Model detail** (`patches/enhancements.c`). Mario's level-of-detail switch (600 and 1600 units) is only drawn while
+  he moves (`geo_switch_mario_stand_run`): standing, he is always the full model, so a test of it runs him. At the
+  camera's usual distance a running Mario is about 860 units away, the middle model on Original. A `GEO_RENDER_RANGE`
+  switches only what is drawn: the object's animation advances in `geo_process_object` either way. That isn't so for
+  culling and drawing distance: an object's animation advances only while it is drawn, which is why the drawing
+  distance is left as the game's, and why widescreen's wider culling (inherent to showing more) is under Aspect Ratio.
+- **Input lag** (`patches/enhancements.c`). The game triple-buffers and swaps to the frame drawn the frame before
+  (`sRenderedFramebuffer`); Reduced swaps to the one just sent. RT64 presents a swap after the task that draws it, so
+  nothing tears.
