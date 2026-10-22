@@ -30,10 +30,16 @@ f32 recomp_get_aspect_ratio(f32 original);
 f32 recomp_get_hud_aspect_ratio(f32 original);
 s32 recomp_get_reduced_input_lag(void);
 s32 recomp_get_lod_divisor(void);
+s32 recomp_get_draw_distance_scale(void);
 void recomp_hires_font_scan(Gfx *list);
 
 // shader_survey.c, called once a frame from display_and_vsync.
 void shader_survey_tick(void);
+
+// draw_distance.c, for interpolation.c's geo_process_node_and_siblings.
+struct Object;
+s32 draw_distance_begin(struct Object *obj);
+void draw_distance_end(struct Object *obj);
 
 // widescreen.c, for the other patches.
 f32 widescreen_aspect(void);

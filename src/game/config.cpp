@@ -38,6 +38,17 @@ namespace {
     };
     const std::string level_of_detail_option = "level_of_detail";
 
+    enum class DrawDistance {
+        Original,
+        High,
+        OptionCount
+    };
+    const std::vector<recomp::config::ConfigOptionEnumOption> draw_distance_options = {
+        {DrawDistance::Original, "Original", "Original"},
+        {DrawDistance::High, "High", "High"},
+    };
+    const std::string draw_distance_option = "draw_distance";
+
     enum class HiresFont {
         On,
         Original,
@@ -63,6 +74,7 @@ namespace {
     // Read on the game thread every frame (src/game/recomp_api.cpp).
     std::atomic<bool> reduced_input_lag_setting{ true };
     std::atomic<uint32_t> level_of_detail_setting{ static_cast<uint32_t>(LevelOfDetail::High) };
+    std::atomic<uint32_t> draw_distance_setting{ static_cast<uint32_t>(DrawDistance::High) };
 }
 
 bool sm64::reduced_input_lag() {
@@ -77,6 +89,16 @@ uint32_t sm64::level_of_detail_divisor() {
             return 4;
         case LevelOfDetail::Highest:
             return 0;
+        default:
+            return 1;
+    }
+}
+
+uint32_t sm64::draw_distance_scale() {
+    // High draws an object the game hides for its distance out to 4 times that distance (patches/draw_distance.c).
+    switch (static_cast<DrawDistance>(draw_distance_setting.load(std::memory_order_relaxed))) {
+        case DrawDistance::High:
+            return 4;
         default:
             return 1;
     }
@@ -125,6 +147,21 @@ void sm64::init_config() {
     graphics.add_option_change_callback(level_of_detail_option,
         [](recomp::config::ConfigValueVariant cur_value, recomp::config::ConfigValueVariant, recomp::config::OptionChangeContext) {
             level_of_detail_setting = std::get<uint32_t>(cur_value);
+        });
+
+    graphics.add_enum_option(
+        draw_distance_option,
+        "Draw Distance",
+        "How far from Mario objects are drawn. The game hides an object further away than its own distance, 4000 "
+        "units for most; out there it still moves and acts as the game has it, and only what is drawn changes."
+        "<br/>"
+        "<b>High:</b> 4 times as far as the game's own distances. <b>Original:</b> the game's own distances.",
+        draw_distance_options,
+        DrawDistance::High
+    );
+    graphics.add_option_change_callback(draw_distance_option,
+        [](recomp::config::ConfigValueVariant cur_value, recomp::config::ConfigValueVariant, recomp::config::OptionChangeContext) {
+            draw_distance_setting = std::get<uint32_t>(cur_value);
         });
 
     sm64::init_hires_font();

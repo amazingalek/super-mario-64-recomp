@@ -46,6 +46,12 @@ the game as it shipped.
 - **Model detail**: models keep their detailed versions four times as far out. Mario switches to a plainer model at
   600 and 1600 units while he moves, which at the camera's usual distance means the middle one: with this, it is the
   full one.
+- **Draw distance**: objects are drawn four times as far from Mario as the game draws them. The game hides most
+  objects more than 4000 units from Mario, so across a course they appeared only as he came near: the bars in front of
+  the star behind Chain Chomp's gate show from Bob-omb Battlefield's start, 10,000 units away. Only what is drawn
+  changes: out there an object moves and acts as the game has it, its sounds stay the game's, and its animation plays
+  for the picture alone, so nothing an object does waits on being drawn. Objects the game makes only near Mario, such
+  as a ring of coins or a group of Goombas, still appear where they did.
 - **No frame copies to RAM**: each frame stays on the GPU instead of also being drawn again at 320×240 and copied back
   into the console's memory, which the game never reads.
 
@@ -63,15 +69,13 @@ is closed. For the game exactly as it shipped, set every Original value:
 | Hi-res text | Hi-res Font | `graphics.json` `hires_font` | `"Original"` (the game's pixel art; `"On"`: smooth) | `"Original"` |
 | Anti-aliasing | MS Anti-Aliasing | `graphics.json` `msaa_option` | `"MSAA2X"` | `"None"` |
 | Model detail | Level of Detail | `graphics.json` `level_of_detail` | `"High"` (4× the distances; `"Highest"`: always the most detailed) | `"Original"` |
+| Draw distance | Draw Distance | `graphics.json` `draw_distance` | `"High"` (4× the distances) | `"Original"` |
 | No frame copies to RAM | Copy Frames to RAM | `graphics.json` `copy_frames_to_ram` | `"Off"` (takes effect on the next start) | `"Original"` (every frame copied) |
 
-Left out, because they would change how the game plays:
+Left out, because it would change how the game plays:
 
 - **60 fps game logic.** The game's movement, physics, timers and animations are all counted in its 30 frames a
   second; running them at 60 is a port of every one of them, not an option.
-- **Draw distance.** The game hides an object past its own drawing distance (4000 units for most), and an object's
-  animation only advances while it is drawn, so drawing objects farther would change when the far ones move, and some
-  of their behaviours wait on their animations. Level geometry already draws to the camera's far plane.
 
 Not options, because they don't change the game: the keyboard and gamepad layouts (Controls), which are RecompFrontend's
 defaults: WASD or the left stick for the stick, the arrows or the right stick for the C buttons.

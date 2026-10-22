@@ -140,8 +140,20 @@ This repo is the game: its recompilation, the patches over it, the desktop build
   he moves (`geo_switch_mario_stand_run`): standing, he is always the full model, so a test of it runs him. At the
   camera's usual distance a running Mario is about 860 units away, the middle model on Original. A `GEO_RENDER_RANGE`
   switches only what is drawn: the object's animation advances in `geo_process_object` either way. That isn't so for
-  culling and drawing distance: an object's animation advances only while it is drawn, which is why the drawing
-  distance is left as the game's, and why widescreen's wider culling (inherent to showing more) is under Aspect Ratio.
+  culling and drawing distance: an object's animation advances only while it is drawn, which is why Draw Distance
+  draws its far objects apart from the game's state (below), and why widescreen's wider culling (inherent to showing
+  more) is under Aspect Ratio.
+- **Draw Distance** (`patches/draw_distance.c`, its header says how). The game hides an object while Mario is further
+  from it than its `oDrawingDistance` (4000 for most): at the end of `cur_obj_update`, or in
+  `load_object_collision_model` for one with collision, as Bob-omb Battlefield's Chain Chomp gate. Hidden, it still
+  runs its behaviour, but the game reads what it draws: its animation advances only in `geo_process_object`, behaviours
+  wait on animations, a hidden object plays no sound (`spawn_sound.c`), and a few read `GRAPH_RENDER_ACTIVE` or
+  `ACTIVE_FLAG_FAR_AWAY`. So the game keeps every flag as it decides it, and the renderer
+  (`geo_process_node_and_siblings`) draws an object hidden only for its distance out to 4 times it, from a copy of the
+  object's state that it puts back after: its animation's frame, `cameraToObject` (which places its sounds), the throw
+  matrix, what its model's geo functions write, and the object it holds. The animation drawn advances in a copy of its
+  own and goes back to the game's frame inside the game's distance. Objects in rooms and held objects are left as the
+  game has them, and spawners that make objects only near Mario (coin formations, Goomba triplets) still do.
 - **Input lag** (`patches/enhancements.c`). The game triple-buffers and swaps to the frame drawn the frame before
   (`sRenderedFramebuffer`); Reduced swaps to the one just sent. RT64 presents a swap after the task that draws it, so
   nothing tears.

@@ -329,8 +329,8 @@ RECOMP_PATCH void geo_process_camera(struct GraphNodeCamera *node) {
 }
 
 // The game's, with sTagNode set around each node's processing (and restored after, for a parent that appends its
-// display list after its children), the orthographic projection noted for its master list and each object checked for
-// a teleport.
+// display list after its children), the orthographic projection noted for its master list, each object checked for
+// a teleport, and an object the game hides only for its distance drawn as Draw Distance says (draw_distance.c).
 RECOMP_PATCH void geo_process_node_and_siblings(struct GraphNode *firstNode) {
     s16 iterateChildren = TRUE;
     struct GraphNode *curGraphNode = firstNode;
@@ -416,6 +416,12 @@ RECOMP_PATCH void geo_process_node_and_siblings(struct GraphNode *firstNode) {
             }
         } else {
             if (curGraphNode->type == GRAPH_NODE_TYPE_OBJECT) {
+                // An object hidden only for its distance, drawn out to Draw Distance's (draw_distance.c).
+                if (draw_distance_begin((struct Object *) curGraphNode)) {
+                    check_teleport((struct Object *) curGraphNode);
+                    geo_process_object((struct Object *) curGraphNode);
+                    draw_distance_end((struct Object *) curGraphNode);
+                }
                 ((struct GraphNodeObject *) curGraphNode)->throwMatrix = NULL;
             }
         }
