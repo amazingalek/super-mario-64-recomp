@@ -24,6 +24,8 @@ void geo_process_node_and_siblings(struct GraphNode *firstNode);
 RECOMP_PATCH void display_and_vsync(void) {
     u16 shown = recomp_get_reduced_input_lag() ? sRenderingFramebuffer : sRenderedFramebuffer;
 
+    shader_survey_tick();
+
     profiler_log_thread5_time(BEFORE_DISPLAY_LISTS);
     osRecvMesg(&gGfxVblankQueue, &gMainReceivedMesg, OS_MESG_BLOCK);
     if (gGoddardVblankCallback != NULL) {

@@ -16,7 +16,7 @@ mkdir -p "$ROOT/build/home" "$ROOT/build/ccache-web"
 docker image inspect "$IMAGE" >/dev/null 2>&1 || docker build -t "$IMAGE" -f "$ROOT/tools/docker/Dockerfile.web" "$ROOT/tools/docker"
 docker run --rm -u "$(id -u):$(id -g)" -v "$ROOT:/src" -w /src -e CCACHE_DIR=/src/build/ccache-web -e HOME=/src/build/home "$IMAGE" bash -euo pipefail -c "
     git config --global --add safe.directory '*'
-    tools/recompile.sh -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++
+    bash tools/recompile.sh -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++
     # The ports CMake finds and ninja depends on, in the image's own cache, which goes with the container (seconds).
     embuilder build sdl2-mt freetype-legacysjlj > /dev/null 2>&1
     [ -f build/web/build.ninja ] || emcmake cmake -S . -B build/web -G Ninja -DCMAKE_BUILD_TYPE=Release $* > build/web-configure.log 2>&1 ||
