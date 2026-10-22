@@ -36,7 +36,8 @@
 # missed and their plays drew (a death exit's fade into a castle room, two; Bowser in the Fire Sea's key, two; the start
 # of Bowser in the Sky) and two of Mario with the vanish cap. At the end of their own sections, those of a play of every
 # level with shots: Bowser in the Fire Sea's six (Bowser fading as he teleports), one each in the basement and the second
-# floor as Mario leaves Hazy Maze Cave and Tiny-Huge Island, and one at Dire, Dire Docks' floor into its second area.
+# floor as Mario leaves Hazy Maze Cave and Tiny-Huge Island, one at Dire, Dire Docks' floor into its second area, and one
+# of the castle's first floor in Firefox.
 00552078 00882c3f fc127e24 fffff9fc 088a000c
 00552078 00882c3f fcffffff fffe793c 0800000c
 005041c8 00882c3f fcffffff fffcfa7d 0ccb540c
@@ -116,6 +117,7 @@ section castle
 00553078 00882c3f fcffffff fffcf279 088a000c
 00553078 00882c3f fc121824 ff33ffff 088a0008
 005049d8 00882c3f fc127e24 fffffbfd 088a0008
+005041c8 00880c3f fcffffff fffe793c 0800000c
 section bob
 005049d8 00882c3f fcffffff fffe7b3d 0800000c
 c8112078 00982c3f fc127fff fffff838 088a000c

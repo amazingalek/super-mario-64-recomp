@@ -76,16 +76,16 @@ Each ends with the game's own frame rate over its courses (`rate()`). Play them 
 
 ## The shader list
 
-`src/rt64_shaders.txt` holds 186 shaders, which RT64 builds as 140 pipelines, in 34 sections (a shader is in each
+`src/rt64_shaders.txt` holds 187 shaders, which RT64 builds as 140 pipelines, in 34 sections (a shader is in each
 section that draws it): the boot's (the launcher, the logo, the title's Mario head, the file select), the castle
 grounds', and one for each place in about the order a player meets it: the castle's floors room by room, the
 courtyard, the 15 courses at the start of each of their first six acts and in their other areas, the secret stages,
 and the three Bowser stages with their fights, keys, the grand star and the ending, with a star's dance, a death and the
 Game Over in the first two courses. It was recorded in headless Chrome at 1256x645 by `tools/record_shaders.sh`, a page
-load a section; its header says what each section played, what it leaves out and the 19 shaders added by hand, which
+load a section; its header says what each section played, what it leaves out and the 20 shaders added by hand, which
 plays drew and the recordings missed. Chrome builds the whole list behind the
-launcher in about 7 s, so the game never waits. Firefox builds none there: it waits 2 s for the boot's section before
-the game's first frame, 1.4 s for the castle grounds' as file A starts, and 0.3-0.4 s for a course's as it starts.
+launcher in about 7 s, so the game never waits. Firefox builds none there: it waits 2.7-3.7 s for the boot's section
+before the game's first frame, 1.6-2.2 s for the castle grounds' as file A starts, and 0.6 s for a course's as it starts.
 
 ## Every level
 
@@ -106,7 +106,10 @@ build. What it found:
 - Eleven shaders the recordings missed, each drawn as a black or empty scene for the frames it took to build: Bowser
   fading as he teleports in his Fire Sea fight (six), Mario with the vanish cap (two), the basement's and the second
   floor's rooms as Mario leaves Hazy Maze Cave and Tiny-Huge Island, and Dire, Dire Docks' floor into its second area.
-  They are in the list (its header), and the same sections played on the page built with it miss none.
+  They are in the list (its header), and the same sections played on the page built with it miss none. In Firefox,
+  Bob-omb Battlefield played clean and the castle's first floor missed one more (in the list too), with no WebGPU
+  error and no exception; Firefox's other plays there stopped before the page did anything, as Firefox's own process
+  stopped answering on the host (N64Recomp-browser's docs/findings.md, A page that stops answering).
 - "PRESS START" over Rainbow Ride, the plan's: Mario's falls in its acts used up his lives, the Game Over went back to
   the title, whose demo plays a level, and the warp to the next act, taken from the demo, kept its input and its text.
   The plan gives Mario four lives at each act, and the survey warps only from a level that is played.
@@ -166,7 +169,7 @@ The part for `docs/game-forks.md`, after the last game's:
 > the N64Recomp-browser tag its `lib/N64Recomp-browser` pins, with `frontend/build_speed.cmake`. Its patches (MIPS C
 > against the decomp's headers) tag every matrix for RT64's interpolation, widen the view, the HUD and the sky to the
 > window's shape, and keep a few modern options, each with an Original value; the page keeps them all at the desktop's
-> defaults, which cost it nothing measured. Render to RAM is off: the game never reads a frame it drew. Its list is 186
+> defaults, which cost it nothing measured. Render to RAM is off: the game never reads a frame it drew. Its list is 187
 > shaders: the boot (the launcher, the logo, the title's Mario head, the file select, 28) and 33 sections (the castle
 > grounds, the castle's floors, the courtyard, the 15 courses at each act, the secret and Bowser stages), recorded by
 > `tools/shader_plan.json`, which warps Mario into each from the castle grounds through the survey in
