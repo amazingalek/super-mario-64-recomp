@@ -1,0 +1,65 @@
+diff --git a/recompui/include/recompui/renderer.h b/recompui/include/recompui/renderer.h
+index 33f79ab..941f639 100644
+--- a/recompui/include/recompui/renderer.h
++++ b/recompui/include/recompui/renderer.h
+@@ -50,6 +50,9 @@ namespace recompui {
+         bool RT64HighPrecisionFBEnabled();
+ 
+         void trigger_texture_pack_update();
++        // Texture pack directories the game provides itself (generated at runtime, for example). They rank below
++        // every enabled mod pack. Thread-safe; takes effect on the next frame.
++        void set_builtin_texture_packs(std::vector<std::filesystem::path> paths);
+         void enable_texture_pack(const recomp::mods::ModContext& context, const recomp::mods::ModHandle& mod);
+         void disable_texture_pack(const recomp::mods::ModHandle& mod);
+         void secondary_enable_texture_pack(const std::string& mod_id);
+diff --git a/recompui/src/renderer/rt64_render_context.cpp b/recompui/src/renderer/rt64_render_context.cpp
+index a7954c7..1729caa 100644
+--- a/recompui/src/renderer/rt64_render_context.cpp
++++ b/recompui/src/renderer/rt64_render_context.cpp
+@@ -2,6 +2,7 @@
+ #include <cstring>
+ #include <variant>
+ #include <algorithm>
++#include <mutex>
+ 
+ #include "hle/rt64_application.h"
+ #include "rt64_render_hooks.h"
+@@ -47,6 +48,10 @@ using TexturePackAction = std::variant<TexturePackEnableAction, TexturePackDisab
+ 
+ static moodycamel::ConcurrentQueue<TexturePackAction> texture_pack_action_queue;
+ 
++// Packs the game provides itself, loaded after (so overridden by) every enabled mod pack.
++static std::mutex builtin_texture_packs_mutex;
++static std::vector<std::filesystem::path> builtin_texture_packs;
++
+ unsigned int MI_INTR_REG = 0;
+ 
+ unsigned int DPC_START_REG = 0;
+@@ -469,6 +474,12 @@ void renderer::RT64Context::check_texture_pack_actions() {
+         for (const std::string &mod_id : sorted_texture_packs) {
+             replacement_directories.emplace_back(RT64::ReplacementDirectory(recomp::mods::get_mod_filename(mod_id)));
+         }
++        {
++            std::lock_guard lock{ builtin_texture_packs_mutex };
++            for (const std::filesystem::path &path : builtin_texture_packs) {
++                replacement_directories.emplace_back(RT64::ReplacementDirectory(path));
++            }
++        }
+ 
+         if (!replacement_directories.empty()) {
+             app->textureCache->loadReplacementDirectories(replacement_directories);
+@@ -510,6 +521,14 @@ void renderer::trigger_texture_pack_update() {
+     texture_pack_action_queue.enqueue(TexturePackUpdateAction{});
+ }
+ 
++void renderer::set_builtin_texture_packs(std::vector<std::filesystem::path> paths) {
++    {
++        std::lock_guard lock{ builtin_texture_packs_mutex };
++        builtin_texture_packs = std::move(paths);
++    }
++    trigger_texture_pack_update();
++}
++
+ void renderer::enable_texture_pack(const recomp::mods::ModContext& context, const recomp::mods::ModHandle& mod) {
+     texture_pack_action_queue.enqueue(TexturePackEnableAction{mod.manifest.mod_id});
+ 

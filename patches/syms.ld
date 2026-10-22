@@ -12,3 +12,4 @@ recomp_get_hud_aspect_ratio = 0x8F000018;
 recomp_get_reduced_input_lag = 0x8F00001C;
 recomp_get_lod_divisor = 0x8F000020;
 osViSwapBuffer_recomp = 0x8F000024;
+recomp_hires_font_scan = 0x8F000028;

@@ -2,7 +2,7 @@
 // game's own enhancements on the Graphics tab. Each enhancement has an Original value that plays as the console does
 // (README, Modern enhancements). RecompFrontend's own Graphics options carry the rest: Resolution and MS Anti-Aliasing
 // (high resolution), Framerate (interpolation to the display's rate), Aspect Ratio and HUD Placement (widescreen,
-// patches/widescreen.c).
+// patches/widescreen.c). Hi-res Font is src/game/hires_font.cpp.
 
 #include <atomic>
 #include <filesystem>
@@ -36,6 +36,17 @@ namespace {
         {LevelOfDetail::Highest, "Highest", "Highest"},
     };
     const std::string level_of_detail_option = "level_of_detail";
+
+    enum class HiresFont {
+        On,
+        Original,
+        OptionCount
+    };
+    const std::vector<recomp::config::ConfigOptionEnumOption> hires_font_options = {
+        {HiresFont::On, "On", "On"},
+        {HiresFont::Original, "Original", "Original"},
+    };
+    const std::string hires_font_option = "hires_font";
 
     enum class CopyFramesToRam {
         Off,
@@ -113,6 +124,22 @@ void sm64::init_config() {
     graphics.add_option_change_callback(level_of_detail_option,
         [](recomp::config::ConfigValueVariant cur_value, recomp::config::ConfigValueVariant, recomp::config::OptionChangeContext) {
             level_of_detail_setting = std::get<uint32_t>(cur_value);
+        });
+
+    sm64::init_hires_font();
+    graphics.add_enum_option(
+        hires_font_option,
+        "Hi-res Font",
+        "The HUD, the power meter and the letters of the dialogs and menus, smoothed from the game's own pixel art "
+        "(each upscaled four times when it is first drawn, and kept in the app folder)."
+        "<br/>"
+        "<b>On:</b> smooth at any resolution. <b>Original:</b> the game's own texels, as blocks at high resolution.",
+        hires_font_options,
+        HiresFont::On
+    );
+    graphics.add_option_change_callback(hires_font_option,
+        [](recomp::config::ConfigValueVariant cur_value, recomp::config::ConfigValueVariant, recomp::config::OptionChangeContext) {
+            sm64::set_hires_font(static_cast<HiresFont>(std::get<uint32_t>(cur_value)) == HiresFont::On);
         });
 
     // The game never reads a frame back from memory (no screen samples a framebuffer, nothing writes into one), so

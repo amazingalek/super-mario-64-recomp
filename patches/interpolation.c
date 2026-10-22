@@ -726,4 +726,6 @@ RECOMP_PATCH void create_gfx_task_structure(void) {
     gGfxSPTask->task.t.data_size = entries * sizeof(Gfx);
     gGfxSPTask->task.t.yield_data_ptr = (u64 *) gGfxSPTaskYieldBuffer;
     gGfxSPTask->task.t.yield_data_size = OS_YIELD_DATA_SIZE;
+    // The list is complete: Hi-res Font makes what it draws new (src/game/hires_font.cpp).
+    recomp_hires_font_scan(base);
 }

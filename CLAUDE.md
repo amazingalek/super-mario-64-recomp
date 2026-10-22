@@ -19,7 +19,8 @@ This repo is the game: its recompilation, the patches over it, the desktop build
 - `lib/`: `sm64` (the decomp, for the symbols and the patches' headers), upstream `rt64`, `N64ModernRuntime` and
   `RecompFrontend` at the commits N64Recomp-browser's web forks are built on, and `N64Recomp-browser` at a release tag.
   The web support every recomp's page shares is developed and documented there; `tools/build_n64recomp.sh` and
-  `CMakeLists.txt` apply its `patches/` to the other three.
+  `CMakeLists.txt` apply its `patches/` to the other three, and `CMakeLists.txt` then this game's own changes to them
+  (`runtime-patches/`, its README lists them). `xbrz` is xBRZ, vendored, for Hi-res Font.
 - `docs/web.md`: the web page: building it (`tools/build_web.sh`), the survey a script drives it by
   (`patches/shader_survey.c`, `tools/shader_survey.js`), the play plans (`tools/play_plan*.json`), the prebuilt shader
   list (`src/rt64_shaders.txt`), what the page measured, and what moves to N64Recomp-browser when the repo is public.
@@ -138,3 +139,11 @@ This repo is the game: its recompilation, the patches over it, the desktop build
 - **Input lag** (`patches/enhancements.c`). The game triple-buffers and swaps to the frame drawn the frame before
   (`sRenderedFramebuffer`); Reduced swaps to the one just sent. RT64 presents a swap after the task that draws it, so
   nothing tears.
+- **Hi-res Font** (`src/game/hires_font.cpp`, its header says how). The game makes its own texture pack from the ROM
+  as it plays: each frame's list is walked, every texture drawn inside the game's text and HUD lists is hashed as RT64
+  hashes it, and a new one is upscaled 4x with xBRZ into `hires_font/` in the app folder, a built-in pack
+  (`runtime-patches/RecompFrontend-0001`). That folder is ROM-derived: never in git (`.gitignore`), CI or a page's
+  `.data`. Its textures are made the first time each is drawn, so a test that wants the first-launch path deletes it.
+  While it is on, the text lists' render tiles are set to clamp in RDRAM: RT64 samples a replacement with a linear
+  filter, and through the game's wrap a pixel-wide line of the letter's far edge showed down the side of a dialog
+  letter. A pack made with another scaler or scale needs a new `pack_version`.

@@ -71,6 +71,26 @@ endif()
 include(${CMAKE_SOURCE_DIR}/lib/N64Recomp-browser/patches/apply.cmake)
 n64recomp_browser_apply_patches(${CMAKE_SOURCE_DIR}/lib)
 
+# The game's own changes to them, on top: runtime-patches/<project>-<n>-*.patch, in order of name (runtime-patches/README.md).
+# One that comes out again is in already.
+file(GLOB SM64_RUNTIME_PATCHES ${CMAKE_SOURCE_DIR}/runtime-patches/*.patch)
+list(SORT SM64_RUNTIME_PATCHES)
+foreach (patch IN LISTS SM64_RUNTIME_PATCHES)
+    get_filename_component(name ${patch} NAME)
+    string(REGEX REPLACE "-[0-9]+-.*" "" project ${name})
+    execute_process(COMMAND git apply --whitespace=nowarn --reverse --check ${patch}
+        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/lib/${project} RESULT_VARIABLE result OUTPUT_QUIET ERROR_QUIET)
+    if (NOT result EQUAL 0)
+        execute_process(COMMAND git apply --whitespace=nowarn ${patch}
+            WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/lib/${project} RESULT_VARIABLE result ERROR_VARIABLE error)
+        if (NOT result EQUAL 0)
+            message(FATAL_ERROR "${name} doesn't apply to lib/${project}:
+${error}")
+        endif()
+        message(STATUS "Patched lib/${project} with ${name}")
+    endif()
+endforeach()
+
 add_subdirectory(${CMAKE_SOURCE_DIR}/lib/rt64 ${CMAKE_BINARY_DIR}/rt64)
 
 set(BUILD_SHARED_LIBS OFF)
@@ -186,6 +206,8 @@ target_sources(SuperMario64Recompiled PRIVATE
     ${CMAKE_SOURCE_DIR}/src/main/register_overlays.cpp
     ${CMAKE_SOURCE_DIR}/src/game/config.cpp
     ${CMAKE_SOURCE_DIR}/src/game/recomp_api.cpp
+    ${CMAKE_SOURCE_DIR}/src/game/hires_font.cpp
+    ${CMAKE_SOURCE_DIR}/lib/xbrz/xbrz.cpp
 )
 if (SM64_PATCHES)
     target_sources(SuperMario64Recompiled PRIVATE ${CMAKE_SOURCE_DIR}/src/main/register_patches.cpp)
