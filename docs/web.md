@@ -55,6 +55,15 @@ course to its act select. It also says which level plays, whether Mario is in co
 full, says whether the file select shows, and counts the game's own frame rate from a `mark()` to a `rate()`. Its header
 says each field. It does nothing unless a script asks.
 
+For what a player meets past a course's start, `tools/shader_survey.js` also writes the game's memory from the page:
+every course's stars and the save's doors and caps, the act an act select takes, Mario's position and lives, Mario put
+on a star, a key or the grand star, and a Bowser beaten (his death set, Mario beside him). Those are for recording and
+finding only: the play plans reach their levels as a player does. Only the warps a door or a painting makes are safe:
+a warp to a death exit in the area Mario is in, the castle's Bowser in the Dark World exit from Peach's slide, or the
+courtyard's Big Boo's Haunt exit from the castle grounds crashes the game, on the desktop too, and a warp to a castle
+door's own node (the castle from its front door, the courtyard from its castle door) leaves Mario in a room the game
+doesn't draw around him, as it is on the desktop, until he walks into one it does.
+
 ## The plans
 
 `tools/play_plan.json` (about 2 minutes 40) boots, waits for the prebuilt shaders, shoots the title and the file select,
@@ -67,15 +76,38 @@ Each ends with the game's own frame rate over its courses (`rate()`). Play them 
 
 ## The shader list
 
-`src/rt64_shaders.txt` holds 145 shaders, which RT64 builds as 112 pipelines, in 18 sections of 290 lines (a shader is
-in each section that draws it): the boot's (the launcher, the logo, the title's Mario head, the file select), the castle
-grounds', the castle's and one for each of the 15 courses. It was recorded in headless Chrome at 1256x645 by
-`tools/record_shaders.sh`, a page load a section; its header says what each section played and what it leaves out. The
-plans' plays then missed three more, added by hand at the end of the boot's section: one in Bob-omb Battlefield in
-Chrome, and two of the title's and the file select's text in both browsers once Hi-res Font set the text tiles to clamp,
-which changes their sampler flags. With them neither plan misses a shader in either browser. Chrome builds the whole list behind the launcher in about 5 s,
-so the game never waits. Firefox builds none there: it waits 2 s for the boot's section before the game's first frame,
-1.4 s for the castle grounds' as file A starts, and 0.3-0.4 s for a course's as it starts.
+`src/rt64_shaders.txt` holds 175 shaders, which RT64 builds as 130 pipelines, in 34 sections (a shader is in each
+section that draws it): the boot's (the launcher, the logo, the title's Mario head, the file select), the castle
+grounds', and one for each place in about the order a player meets it: the castle's floors room by room, the
+courtyard, the 15 courses at the start of each of their first six acts and in their other areas, the secret stages,
+and the three Bowser stages with their fights, keys, the grand star and the ending, with a star's dance, a death and the
+Game Over in the first two courses. It was recorded in headless Chrome at 1256x645 by `tools/record_shaders.sh`, a page
+load a section; its header says what each section played, what it leaves out and the eight shaders added by hand at
+the end of the boot's section, which plays drew and the recordings missed. Chrome builds the whole list behind the
+launcher in about 7 s, so the game never waits. Firefox builds none there: it waits 2 s for the boot's section before
+the game's first frame, 1.4 s for the castle grounds' as file A starts, and 0.3-0.4 s for a course's as it starts.
+
+## Every level
+
+Every place in the list was reached and played on the page as its section was recorded, in headless Chrome at
+1256x645 on a desktop GPU from a fresh profile: the 15 courses at every act's start and their other areas, the castle's
+three floors room by room, the courtyard and the grounds, Peach's slide, the three cap stages, Wing Mario Over the
+Rainbow, the aquarium, and the three Bowser stages and their fights. These were played again with shots, uncapped, and
+the shots looked at (`plays.pending.jsonl`, notes `level sweep`): Bob-omb Battlefield at each act's start with its
+first star (the dance, the save dialog), a death and the Game Over with its Mario head; the castle's first floor and
+basement room by room and the courtyard, at 4:3 (960x720) too; the three Bowser fights (Bowser beaten, his key or the
+grand star taken, its cutscene, the "Congratulations" screen, the castle again, the ending); the pause menu and the act
+select. Where something looked wrong, the same spot was played on the desktop build. What it found:
+
+- Nothing of the web's: no WebGPU error, no exception, no trap, the game at 30.0 frames a second. The HUD, the sky, the
+  fog, water and transparency draw right, in widescreen and at 4:3. The Game Over's dizzy Mario head draws
+  whole at Framerate Display in every shot of a burst of twelve.
+- The ending's scenes draw in a smaller window in the middle of the screen: the game's own viewport for them
+  (`sEndCutsceneVp`).
+- The sound drops only at a level's load, as the game stops its music for it: 1,200-2,700 frames short (30-60 ms) a
+  load and none while a level plays, as at the boot in the first plays.
+- The warps and writes that reach the levels (The survey) have their own limits, the game's: a warp that no player
+  makes can crash it, natively too, and a warp to a door's own node leaves Mario in a room the game doesn't draw.
 
 ## Frame rate
 
@@ -124,10 +156,11 @@ The part for `docs/game-forks.md`, after the last game's:
 > the N64Recomp-browser tag its `lib/N64Recomp-browser` pins, with `frontend/build_speed.cmake`. Its patches (MIPS C
 > against the decomp's headers) tag every matrix for RT64's interpolation, widen the view, the HUD and the sky to the
 > window's shape, and keep a few modern options, each with an Original value; the page keeps them all at the desktop's
-> defaults, which cost it nothing measured. Render to RAM is off: the game never reads a frame it drew. Its list is 143
-> shaders: the boot (the launcher, the logo, the title's Mario head, the file select, 19) and 17 sections (the castle
-> grounds, the castle, the 15 courses), recorded by `tools/shader_plan.json`, which warps Mario into each course from
-> the castle grounds through the survey in `patches/shader_survey.c`. IDO narrows a char or short argument in the
+> defaults, which cost it nothing measured. Render to RAM is off: the game never reads a frame it drew. Its list is 175
+> shaders: the boot (the launcher, the logo, the title's Mario head, the file select, 26) and 33 sections (the castle
+> grounds, the castle's floors, the courtyard, the 15 courses at each act, the secret and Bowser stages), recorded by
+> `tools/shader_plan.json`, which warps Mario into each from the castle grounds through the survey in
+> `patches/shader_survey.c`. IDO narrows a char or short argument in the
 > function that takes it, so a patch replacing a game function whose caller passes a wider value takes it as a word (its
 > CLAUDE.md, Narrow arguments). Its docs/web.md and the headers of `tools/build_web.sh`, `tools/shader_survey.js` and
 > `src/rt64_shaders.txt` have the rest.

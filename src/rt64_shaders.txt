@@ -9,17 +9,31 @@
 # launcher, the boot as it plays by itself (the logo, the title's Mario head) and the file select, reached with Start
 # as a player does. Then a section for the castle grounds, reached by picking file A with A on a new save and skipping
 # its intro (Peach's letter, Lakitu) with A: about 25 s of the game's time from where Mario stands, walking out and
-# back, jumping, turning the camera both ways and pausing (tools/shader_plan.json). Then a section for the castle and
-# one for each of the 15 courses, each warped into from the castle grounds by patches/shader_survey.c as its door or
-# painting does (tools/shader_survey.js), its act select taken with A, then the same 25 s from where the course starts
-# Mario, kept at full health. The castle grounds' intro on the way to each is left out of the castle's and the courses'
-# sections. Not recorded: the castle's upper floors and basement, the courtyard, the Bowser and secret levels, what a
-# course draws further in than its start, and the ending (RT64 builds those when the game first asks for them). Flags
-# follow settings (filtering, HDR, MSAA, upscaling), so a change to one of those defaults means recording again. The
-# plays' misses (N64Recomp-browser's tools/play_page.mjs names each) are added by hand at the end of the boot's section,
-# which the page builds before the game starts: one, in Bob-omb Battlefield in Chrome, and two of the title's and the
-# file select's text in both browsers once Hi-res Font sets the text tiles to clamp (src/game/hires_font.cpp), which
-# changes their sampler flags.
+# back, jumping, turning the camera both ways and pausing. Then a section for each place in about the order a player
+# first meets it: the castle's first floor, Bob-omb Battlefield, Whomp's Fortress, Jolly Roger Bay, Cool, Cool Mountain,
+# Peach's slide, Bowser in the Dark World and his fight, the basement, the courtyard, Big Boo's Haunt, Hazy Maze Cave,
+# Lethal Lava Land, Shifting Sand Land, Dire, Dire Docks, the metal cap's stage, Bowser in the Fire Sea and his fight,
+# the second floor, Snowman's Land, Wet-Dry World, Tall, Tall Mountain, Tiny-Huge Island, the wing and vanish caps'
+# stages, Wing Mario Over the Rainbow, the aquarium, the third floor, Tick Tock Clock, Rainbow Ride, Bowser in the Sky
+# and his fight. Each is warped into from the castle grounds by patches/shader_survey.c as its door or painting does
+# (tools/shader_survey.js, whose header says each helper), Mario kept at full health:
+# - a course at the start of each of its first six acts (every course's stars and the save's doors and caps given, so
+#   each act and door opens), its act select taken with A: the first act's 25 s as in the grounds, about 8 s of each
+#   other act's, and of each of its other areas;
+# - a castle floor room by room, from where the game puts Mario as he leaves each painting, Peach's slide between them
+#   (left out of the section), about 8 s in each;
+# - a stage, 8 s from where it starts Mario and a pause; a Bowser beaten (his death set, Mario beside him), his key
+#   taken and its cutscene back to the castle, and in the last the grand star and the ending;
+# - in Bob-omb Battlefield its first star taken (the dance, the save dialog), then a death with no lives left (the
+#   Game Over and its Mario head); in Whomp's Fortress a death.
+# The castle grounds' intro and the castle on the way between acts are left out. Not recorded: what a course draws
+# further in than its acts' starts, and its 100-coin star. Flags follow settings (filtering, HDR, MSAA, upscaling), so a
+# change to one of those defaults means recording again. The plays' misses (N64Recomp-browser's tools/play_page.mjs
+# names each) are added by hand at the end of the boot's section, which the page builds before the game starts:
+# one in Bob-omb Battlefield in Chrome, two of the title's and the file select's text in both browsers once Hi-res Font
+# sets the text tiles to clamp (src/game/hires_font.cpp), which changes their sampler flags, and five that the levels'
+# recordings missed and their plays drew: a death exit's fade into a castle room (two), Bowser in the Fire Sea's key
+# (two) and the start of Bowser in the Sky.
 00552078 00882c3f fc127e24 fffff9fc 088a000c
 00552078 00882c3f fcffffff fffe793c 0800000c
 005041c8 00882c3f fcffffff fffcfa7d 0ccb540c
@@ -31,16 +45,21 @@
 00442478 00882c3f fc30b261 44664924 088a000c
 00552048 00882c3f fcffffff fffe793c 0800000c
 005041c8 00882c3f fc127e24 fffff3f9 0aaaaa0c
-005041c9 00a02c3f fc30b261 44664924 008a000b
 00552078 00882c3f fc127e24 fffff9fc 088a0004
 00552078 00882c3f fcffffff fffe793c 08000004
+005041c8 00800c3f fc129a25 ff37ffff 04cb540b
+00504240 00880c3f fc129a25 ff37ffff 0ccb540c
+00553048 00882c3f fcffffff fffcf279 0ccb540c
+005041c9 00a02c3f fc30b261 44664924 04cb540b
+005041c9 00a02c3f fc30b261 44664924 008a000b
 005041c8 00800c3f fc129a25 ff37ffff 008a000b
 00504240 00880c3f fc129a25 ff37ffff 088a000c
-005041c8 00800c3f fc129a25 ff37ffff 04cb540b
-00553048 00882c3f fcffffff fffcf279 0ccb540c
 00442078 00882c3f fc127e24 fffff9fc 088a0008
-005041c9 00a02c3f fc30b261 44664924 04cb540b
-00504240 00880c3f fc129a25 ff37ffff 0ccb540c
+c8112d58 00982c3f fc127fff fffff838 088a000c
+c8112078 00982c3f fcffffff fffcf838 088a0008
+005049d8 00882c3f fcffffff fffcf87c 088a000c
+00552078 00882c3f fc127e24 fffffbfd 088a000c
+004049d8 00882c3f fc121a24 ff37ffff 0ccb5408
 section grounds
 0f0a4000 00882c3f fc127e24 fffff9fc 0ccb540c
 00552078 00882c3f fc127e24 fffff9fc 0ccb540c
@@ -74,14 +93,24 @@ section grounds
 00553078 00882c3f fc121824 ff33ffff 0ccb5400
 005049d8 00882c3f fcffffff fffe7b3d 08000004
 00553078 00882c3f fc121824 ff33ffff 0aaaaa08
-005041c9 00a02c3f fcffffff fffe793c 008a000b
+005041c9 00a02c3f fcffffff fffe793c 04cb540b
 00552078 00882c3f fc147e28 44fe7b3d 0ccb540c
 00504240 00882c3f fc42ca85 ff97ffff 0800000c
-005049d8 00882c3f fc121824 ff33ffff 0ccb540c
 00504240 00880c3f fc42ca85 ff97ffff 0800000c
-section castle
 005049d8 00882c3f fc121824 ff33ffff 0ccb540c
+section castle
+00553078 00882c3f fc121824 ff33ffff 0ccb5404
+0f0a7008 00880c3f fcffffff fffcf279 0ccb540c
+00552078 00882c3f fc121824 ff33ffff 0ccb540c
+005049d8 00882c3f fc121824 ff33ffff 0ccb540c
+005049d8 00882c3f fc121824 ff33ffff 0ccb5404
+004049d8 00882c3f fc121824 ff33ffff 0ccb540c
+0c192078 00992c3f fc26a1ff 1ffc923c 1ccf5404
+00442078 00882c3f fc127e24 fffff9fc 088a0004
+00442078 00882c3f fcffffff fffe793c 0800000c
 00553078 00882c3f fcffffff fffcf279 088a000c
+00553078 00882c3f fc121824 ff33ffff 088a0008
+005049d8 00882c3f fc127e24 fffffbfd 088a0008
 section bob
 005049d8 00882c3f fcffffff fffe7b3d 0800000c
 c8112078 00982c3f fc127fff fffff838 088a000c
@@ -103,7 +132,17 @@ c8113078 00982c3f fcffffff fffcf238 088a0008
 005049d8 00882c3f fc121824 ff33ffff 0ccb5408
 00443078 00882c3f fcffffff fffcf279 0ccb5408
 00443078 00882c3f fc121824 ff33ffff 0ccb5400
+00504240 00880c3f fc42ca85 ff97ffff 0800000c
 005049d8 00882c3f fc121824 ff33ffff 0ccb540c
+00552078 00882c3f fcffffff fffcfa7d 088a000c
+00442078 00882c3f fcffffff fffcf87c 0ccb5408
+00442078 00882c3f fcffffff fffe793c 08000008
+c8113078 00982c3f fcffffff fffcf238 088a000c
+005041c8 00882c3f fc127e24 fffff3f9 0ccb540c
+00552078 00882c3f fc121824 ff33ffff 0ccb540c
+0f0a7008 00880c3f fcffffff fffcf279 0ccb540c
+005041c9 00a00c3f fcffffff fffcf279 04cb540b
+00552048 00880c3f fcffffff fffe793c 0800000c
 section wf
 005049d8 00882c3f fcffffff fffe7b3d 0800000c
 00552078 00882c3f fc127e24 fffff9fc 099b1004
@@ -116,6 +155,11 @@ section wf
 00504dd8 00882c3f fcffffff fffe793c 0800000c
 00504dd8 00882c3f fc121824 ff33ffff 088a000c
 005049d8 00882c3f fc121824 ff33ffff 0ccb540c
+00552078 00882c3f fc147e28 44fe793c 0ccb540c
+0f0a7008 00880c3f fcffffff fffcf279 0ccb540c
+005041c9 00a00c3f fcffffff fffcf279 04cb540b
+00552048 00880c3f fcffffff fffe793c 0800000c
+00552078 00882c3f fc121824 ff33ffff 0ccb540c
 section jrb
 005049d8 00882c3f fcffffff fffe7b3d 0800000c
 c8112078 00982c3f fc127fff fffff838 088a000c
@@ -138,6 +182,11 @@ c8113078 00982c3f fcffffff fffcf238 099b1008
 00443078 00882c3f fc121824 ff33ffff 0ccb5400
 005049d8 00882c3f fc121824 ff33ffff 0ccb540c
 0f0a7008 00880c3f fcffffff fffcf279 0ccb540c
+00552078 00882c3f fcffffff fffcfa7d 088a000c
+00442078 00882c3f fcffffff fffcfa7d 088a000c
+00443078 00882c3f fc121824 ff33ffff 0ccb5404
+00552078 00882c3f fc127e24 fffff9fc 088a0008
+00553078 00882c3f fcffffff fffcf279 0ccb5404
 section ccm
 005049d8 00882c3f fcffffff fffe7b3d 0800000c
 00552078 00882c3f fc127e24 fffff9fc 088a0000
@@ -155,8 +204,43 @@ section ccm
 005049d8 00882c3f fc127e24 fffffbfd 088a0000
 005049d8 00882c3f fc121824 ff33ffff 0ccb5408
 005049d8 00882c3f fc121824 ff33ffff 0aaaaa08
-005041c9 00a02c3f fcffffff fffe793c 04cb540b
 005049d8 00882c3f fc121824 ff33ffff 0ccb540c
+00552d58 00882c3f fc127e24 fffff9fc 088a0004
+00553078 00882c3f fc121824 ff33ffff 099b100c
+005049d8 00882c3f fcffffff fffcfa7d 088a0008
+005049d8 00882c3f fc121824 ff33ffff 099b1000
+005049d8 00882c3f fc121824 ff33ffff 088a0000
+section pss
+00504240 00880c3f fc42ca85 ff97ffff 0800000c
+section bitdw
+005049d8 00882c3f fc121824 ff33ffff 0ccb540c
+0c192078 00992c3f fc26a1ff 1ffc923c 1ccf5404
+00442078 00882c3f fc127e24 fffff9fc 088a0004
+00442078 00882c3f fcffffff fffe7b3d 0800000c
+00442078 00882c3f fc147e28 44fe7b3d 0ccb540c
+0f0a7008 00880c3f fcffffff fffcf279 0ccb540c
+00504240 00880c3f fc42ca85 ff97ffff 0800000c
+section bowser1
+00504240 00880c3f fc42ca85 ff97ffff 0800000c
+005049d8 00882c3f fc129a25 ff37ffff 0ccb5404
+005049d8 00882c3f fc121824 ff33ffff 0ccb5408
+005049d8 00882c3f fc129a25 ff37ffff 0ccb5400
+005049d8 00882c3f fc121a24 ff37ffff 0ccb5408
+004049fb 00882c3f fc127e24 fffffbfd 088a000c
+004049fb 00882c3f fcffffff fffe7b3d 0800000c
+004049d8 00882c3f fc129a25 ff37ffff 0ccb5404
+004049d8 00882c3f fc121824 ff33ffff 0ccb5408
+00442078 00882c3f fcffffff fffe793c 0800000c
+004049d8 00882c3f fc121824 ff33ffff 0ccb540c
+005041c8 00882c3f fc127e24 fffff3f9 0ccb540c
+0c192078 00992c3f fc26a1ff 1ffc923c 1ccf5404
+00442078 00882c3f fc127e24 fffff9fc 088a0004
+section basement
+005049d8 00882c3f fc121824 ff33ffff 0ccb5404
+004049d8 00882c3f fc121824 ff33ffff 0ccb540c
+section courtyard
+005049d8 00882c3f fc121824 ff33ffff 0ccb540c
+00504240 00880c3f fc42ca85 ff97ffff 0800000c
 section bbh
 005049d8 00882c3f fcffffff fffe7b3d 0800000c
 00552078 00882c3f fc127e24 fffff9fc 099b1004
@@ -166,6 +250,8 @@ section bbh
 005049d8 00882c3f fc121824 ff33ffff 0ccb540c
 005049d8 00882c3f fc147e28 44fe7b3d 0ccb540c
 005049d8 00882c3f fc129a25 ff37ffff 0ccb5404
+00504240 00880c3f fc42ca85 ff97ffff 0800000c
+00552078 00882c3f fcffffff fffcfa7d 088a000c
 section hmc
 005049d8 00882c3f fcffffff fffe7b3d 0800000c
 c8112078 00982c3f fc127fff fffff838 088a000c
@@ -195,21 +281,33 @@ c8113078 00982c3f fcffffff fffcf238 088a0008
 005049d8 00882c3f fc129a25 ff37ffff 0ccb5404
 00443078 00882c3f fcffffff fffcf279 0ccb5408
 00443078 00882c3f fc121824 ff33ffff 0ccb5400
+00552078 00882c3f fcffffff fffcfa7d 088a000c
 section lll
 005049d8 00882c3f fcffffff fffe7b3d 0800000c
 00552078 00882c3f fc127e24 fffff9fc 099b1004
 00553078 00882c3f fcffffff fffcf279 0ccb5404
 00553078 00882c3f fc121824 ff33ffff 088a0000
 005049d8 00882c3f fc121824 ff33ffff 088a0008
-005041c9 00a02c3f fcffffff fffe793c 04cb540b
 005049d8 00882c3f fc121824 ff33ffff 0ccb540c
 005049d8 00882c3f fc129a25 ff37ffff 0ccb5404
 005049d8 00882c3f fc121824 ff33ffff 0ccb5408
-005049d8 00882c3f fcffffff fffe793c 0800000c
-00552078 00882c3f fcffffff fffcf87c 088a000c
-005049d8 00882c3f fc129a25 ff37ffff 0ccb5400
 00552078 00882c3f fcffffff fffcfa7d 088a000c
 00553078 00882c3f fc121824 ff33ffff 0ccb5404
+005049d8 00882c3f fcffffff fffe793c 0800000c
+00553078 00882c3f fcffffff fffcf279 088a000c
+005049d8 00882c3f fc129a25 ff37ffff 0ccb5400
+005049d8 00882c3f fc121a24 ff37ffff 0ccb5408
+c8112078 00982c3f fc127fff fffff838 088a000c
+c8112078 00982c3f fc127fff fffff838 099b100c
+00442078 00882c3f fcffffff fffcf87c 088a000c
+00442078 00882c3f fcffffff fffe793c 0800000c
+00442078 00882c3f fcffffff fffe7b3d 0800000c
+00442078 00882c3f fc147e28 44fe7b3d 0ccb540c
+c8113078 00982c3f fcffffff fffcf238 0ccb540c
+00443078 00882c3f fc121824 ff33ffff 0ccb540c
+005049d8 00882c3f fc121824 ff33ffff 099b100c
+00442078 00882c3f fc127e24 fffff9fc 088a0004
+00443078 00882c3f fc121824 ff33ffff 0aaaaa08
 section ssl
 005049d8 00882c3f fcffffff fffe7b3d 0800000c
 00552078 00882c3f fc127e24 fffff9fc 099b1004
@@ -221,11 +319,25 @@ section ssl
 005049d8 00882c3f fc121824 ff33ffff 0ccb5400
 005049d8 00882c3f fc121824 ff33ffff 088a0008
 005049d8 00882c3f fc121824 ff33ffff 0ccb540c
-005049d8 00882c3f fcff9bff ff34fe7f 0ccb540c
 005049d8 00882c3f fc129a25 ff37ffff 0ccb5404
 0f0a7008 00880c3f fcffffff fffcf279 0ccb540c
 00552078 00882c3f fc121824 ff33ffff 0ccb540c
-004049d8 00882c3f fc121824 ff33ffff 0ccb540c
+00504240 00880c3f fc42ca85 ff97ffff 0800000c
+c8112078 00982c3f fc127fff fffff838 088a000c
+c8112078 00982c3f fc127fff fffff838 0ccb540c
+00442078 00882c3f fcffffff fffe7b3d 0800000c
+00442078 00882c3f fc147e28 44fe7b3d 0ccb540c
+00442078 00882c3f fc127e24 fffff9fc 0ccb540c
+00442078 00882c3f fcffffff fffe793c 0800000c
+00442078 00882c3f fc127e24 fffff9fc 0ccb5404
+c8112478 00982c3f fcffffff fffcf838 088a0008
+c8113078 00982c3f fcffffff fffcf238 088a0008
+00443078 00882c3f fcffffff fffcf279 088a000c
+00443078 00882c3f fc121824 ff33ffff 0ccb540c
+00443078 00882c3f fcffffff fffcf279 0ccb5408
+005049d8 00882c3f fc121824 ff33ffff 0ccb5408
+00504dd8 00882c3f fc121a24 ff37ffff 088a000c
+c81045d8 00982c3f fcffffff fffcfa38 088a0008
 section ddd
 005049d8 00882c3f fcffffff fffe7b3d 0800000c
 00552078 00882c3f fcffffff fffcf87c 0ccb540c
@@ -235,6 +347,56 @@ section ddd
 005049d8 00882c3f fc121824 ff33ffff 0ccb540c
 00553078 00882c3f fcffffff fffcf279 0ccb5404
 0f0a7008 00880c3f fcffffff fffcf279 0ccb540c
+00504240 00880c3f fc42ca85 ff97ffff 0800000c
+00552078 00882c3f fcffffff fffcfa7d 088a000c
+00552078 00882c3f fc127e24 fffff9fc 0ccb5408
+005049d8 00882c3f fcffffff fffcfa7d 088a000c
+section cotmc
+c8112078 00982c3f fc127fff fffff838 088a000c
+c8112078 00982c3f fc127fff fffff838 099b100c
+c8112078 00982c3f fcffffff fffe7838 0800000c
+00442078 00882c3f fc127e24 fffff9fc 088a0004
+00442078 00882c3f fcffffff fffcfa7d 088a000c
+00442078 00882c3f fc127e24 fffff9fc 088a000c
+00442078 00882c3f fc147e28 44fe793c 088a0008
+00442078 00882c3f fc147e28 44fe793c 0ccb5408
+00442078 00882c3f fcffffff fffe793c 08000008
+00442078 00882c3f fcffffff fffe793c 0800000c
+00442078 00882c3f fc127e24 fffff9fc 0ccb5404
+005049d8 00882c3f fcffffff fffe7b3d 0800000c
+c81045d8 00982c3f fcffffff fffcfa38 088a0008
+00504240 00880c3f fc42ca85 ff97ffff 0800000c
+005049d8 00882c3f fc121824 ff33ffff 0ccb540c
+00442078 00882c3f fc127e24 fffff9fc 0ccb540c
+section bitfs
+00552078 00882c3f fc121824 ff33ffff 088a0008
+00552078 00882c3f fc127e24 fffff9fc 088a0008
+00553078 00882c3f fc121824 ff33ffff 088a0008
+00553078 00882c3f fcffffff fffcf279 0ccb5404
+005049d8 00882c3f fc121824 ff33ffff 088a0008
+005049d8 00882c3f fc121824 ff33ffff 0ccb540c
+005049d8 00882c3f fc129a25 ff37ffff 0ccb5404
+005049d8 00882c3f fc121824 ff33ffff 0ccb5408
+005049d8 00882c3f fc127e24 fffffbfd 088a000c
+section bowser2
+c8112078 00982c3f fc127fff fffff838 088a000c
+00442078 00882c3f fcffffff fffe7b3d 0800000c
+00442078 00882c3f fc147e28 44fe7b3d 0ccb540c
+00442078 00882c3f fc127e24 fffffbfd 088a000c
+00442078 00882c3f fc127e24 fffff9fc 088a000c
+00553078 00882c3f fcffffff fffcf279 0ccb5404
+00504240 00880c3f fc42ca85 ff97ffff 0800000c
+005049d8 00882c3f fc121824 ff33ffff 0ccb540c
+004049f8 00882c3f fc127e24 fffffbfd 088a000c
+005049d8 00882c3f fc129a25 ff37ffff 0ccb5404
+005049d8 00882c3f fc121824 ff33ffff 0ccb5408
+005049d8 00882c3f fc129a25 ff37ffff 0ccb5400
+005049d8 00882c3f fc121a24 ff37ffff 0ccb5408
+section upstairs
+00552078 00882c3f fc121824 ff33ffff 0ccb540c
+005049d8 00882c3f fc121824 ff33ffff 0ccb540c
+00504dd8 00882c3f fc121824 ff33ffff 0ccb5404
+005049d8 00882c3f fc121824 ff33ffff 0ccb5404
 section sl
 005049d8 00882c3f fcffffff fffe7b3d 0800000c
 00552078 00882c3f fcffffff fffcfa7d 088a000c
@@ -247,7 +409,6 @@ section sl
 00504dd8 00882c3f fc121824 ff33ffff 088a0004
 00504dd8 00882c3f fc121824 ff33ffff 0ccb5404
 005049d8 00882c3f fc121824 ff33ffff 0ccb540c
-005049d8 00882c3f fc121824 ff33ffff 0ccb5400
 section wdw
 005049d8 00882c3f fcffffff fffe7b3d 0800000c
 00552078 00882c3f fcffffff fffe793c 08000000
@@ -258,6 +419,7 @@ section wdw
 005049d8 00882c3f fc127e24 fffffbfd 0ccb5404
 00504dd8 00882c3f fcffffff fffe793c 0800000c
 005049d8 00882c3f fc121824 ff33ffff 0ccb540c
+00504240 00880c3f fc42ca85 ff97ffff 0800000c
 section ttm
 005049d8 00882c3f fcffffff fffe7b3d 0800000c
 00552078 00882c3f fcffffff fffcfa7d 088a000c
@@ -271,6 +433,11 @@ section ttm
 005049d8 00882c3f fc121824 ff33ffff 0ccb540c
 005049d8 00882c3f fc121824 ff33ffff 088a0008
 0f0a7008 00880c3f fcffffff fffcf279 0ccb540c
+c8112078 00982c3f fc127fff fffff838 088a000c
+c8112078 00982c3f fcffffff fffe7838 0800000c
+c8112078 00982c3f fc127fff fffff838 0bba440c
+00442078 00882c3f fcffffff fffe7b3d 0800000c
+00442078 00882c3f fc147e28 44fe7b3d 0ccb540c
 section thi
 005049d8 00882c3f fcffffff fffe7b3d 0800000c
 00552078 00882c3f fc127e24 fffff9fc 099b1004
@@ -280,8 +447,26 @@ section thi
 005049d8 00882c3f fc121824 ff33ffff 099b100c
 005049d8 00882c3f fc121824 ff33ffff 0ccb5400
 005049d8 00882c3f fc121824 ff33ffff 0ccb540c
+00504240 00880c3f fc42ca85 ff97ffff 0800000c
+00552078 00882c3f fcffffff fffcfa7d 088a000c
+00552078 00882c3f fcffffff fffcf87c 0ccb5408
 005049d8 00882c3f fc121824 ff33ffff 0aaaaa08
 0f0a7008 00880c3f fcffffff fffcf279 0ccb540c
+00553078 00882c3f fcffffff fffcf279 088a0008
+005049d8 00882c3f fc121824 ff33ffff 099b1008
+section totwc
+00504240 00880c3f fc42ca85 ff97ffff 0800000c
+section vcutm
+005049d8 00882c3f fc121824 ff33ffff 0ccb540c
+section wmotr
+005049d8 00882c3f fcffffff fffe7b3d 0800000c
+005049d8 00882c3f fc121824 ff33ffff 0ccb540c
+0f0a7008 00880c3f fcffffff fffcf279 0ccb540c
+section sa
+section upstairs3
+00552078 00882c3f fc121824 ff33ffff 0ccb540c
+005049d8 00882c3f fc121824 ff33ffff 0ccb540c
+00504dd8 00882c3f fc121824 ff33ffff 0ccb5404
 section ttc
 005049d8 00882c3f fcffffff fffe7b3d 0800000c
 c8112078 00982c3f fc127fff fffff838 0ccb540c
@@ -298,16 +483,14 @@ c8113078 00982c3f fcffffff fffcf238 0ccb5408
 005049d8 00882c3f fc127e24 fffff9fc 088a000c
 005049d8 00882c3f fc121824 ff33ffff 0ccb540c
 00443078 00882c3f fc121824 ff33ffff 0ccb540c
-00442078 00882c3f fcffffff fffcfa7d 088a000c
-00443078 00882c3f fc121824 ff33ffff 0ccb5404
-005049d8 00882c3f fc121824 ff33ffff 0ccb5408
-00442078 00882c3f fc127e24 fffff9fc 0ccb5404
 00552078 00882c3f fc127e24 fffff9fc 099b1004
 00553078 00882c3f fcffffff fffcf279 099b1008
 005049d8 00882c3f fc121824 ff33ffff 099b1008
 005049d8 00882c3f fcffffff fffe793c 08000000
 0f0a7008 00880c3f fcffffff fffcf279 0ccb540c
 00552078 00882c3f fc121824 ff33ffff 0ccb540c
+00504240 00880c3f fc42ca85 ff97ffff 0800000c
+00552078 00882c3f fcffffff fffcfa7d 088a000c
 section rr
 005049d8 00882c3f fcffffff fffe7b3d 0800000c
 00552078 00882c3f fcffffff fffcfa7d 088a000c
@@ -319,7 +502,6 @@ section rr
 005049d8 00882c3f fc121a24 ff37ffff 0bba4408
 005049d8 00882c3f fc121a24 ff37ffff 099b1008
 005049d8 00882c3f fc121a24 ff37ffff 0ccb5408
-005041c9 00a02c3f fcffffff fffe793c 04cb540b
 005049d8 00882c3f fc121824 ff33ffff 0ccb540c
 00552078 00882c3f fc127e24 fffff9fc 099b1004
 00553078 00882c3f fcffffff fffcf279 099b1008
@@ -327,3 +509,31 @@ section rr
 005049d8 00882c3f fcffffff fffe793c 08000000
 00504dd8 00882c3f fc121824 ff33ffff 0ccb5404
 0f0a7008 00880c3f fcffffff fffcf279 0ccb540c
+005049d8 00882c3f fc121824 ff33ffff 0ccb5408
+00553078 00882c3f fcffffff fffcf279 088a0008
+section bits
+005049d8 00882c3f fc121824 ff33ffff 0ccb540c
+c8112078 00982c3f fc127fff fffff838 088a000c
+c8112078 00982c3f fcffffff fffe7838 0800000c
+c8112078 00982c3f fc127fff fffff838 0ccb540c
+00442078 00882c3f fc127e24 fffff9fc 088a0004
+00442078 00882c3f fc127e24 fffff9fc 0ccb5404
+00442078 00882c3f fcffffff fffe7b3d 0800000c
+00442078 00882c3f fc147e28 44fe7b3d 0ccb540c
+0f0a7008 00880c3f fcffffff fffcf279 0ccb540c
+section bowser3
+00504240 00880c3f fc42ca85 ff97ffff 0800000c
+005049d8 00882c3f fc129a25 ff37ffff 0ccb5404
+005049d8 00882c3f fc121824 ff33ffff 0ccb5408
+005049d8 00882c3f fc129a25 ff37ffff 0ccb5400
+005049d8 00882c3f fc121a24 ff37ffff 0ccb5408
+00552078 00882c3f fcffffff fffcfa7d 088a000c
+00553078 00882c3f fc121824 ff33ffff 0ccb5404
+004049f8 00882c3f fc127e24 fffffbfd 088a000c
+004049d8 00882c3f fc129a25 ff37ffff 0ccb5404
+004049d8 00882c3f fc121824 ff33ffff 0ccb540c
+004049d8 00882c3f fc121824 ff33ffff 0ccb5408
+004049d8 00882c3f fc129a25 ff37ffff 0ccb5400
+00553078 00882c3f fcffffff fffcf279 0ccb5400
+005049d8 00882c3f fc121824 ff33ffff 0ccb540c
+00552078 00882c3f fcffffff fffe7b3d 08000008
