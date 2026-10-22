@@ -13,9 +13,6 @@ use_absolute_symbols = true
 [patches]
 # Functions recompiled as empty ones.
 stubs = [
-    # Never called (src/audio/external.c): it reads a global into $zero, which N64Recomp writes as an assignment to 0,
-    # which doesn't compile.
-    "unused_8031E568",
     # libultra's debugger (lib/src/kdebugserver.c), reached only from the exception handler, which isn't recompiled:
     # they call send and string_to_u32, which N64Recomp leaves out.
     "process_command_memory",

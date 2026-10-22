@@ -56,7 +56,7 @@ This repo is the game: its recompilation, the patches over it, the desktop build
 - **Busy waits.** ultramodern runs one game thread at a time and preempts none, so a loop that waits for another
   game thread has to yield (`recomp_yield`). `wait_for_audio_frames`, where the game waits for the sound thread
   while it resets the audio, is the one met so far (`patches/audio.c`).
-- **Stubs.** `us.toml` stubs four functions whose code doesn't recompile or calls what the runtime lacks: debug and
+- **Stubs.** `us.toml` stubs three functions whose code doesn't recompile or calls what the runtime lacks: debug and
   never-called code, each with its reason there.
 - **The symbols.** The decomp's US build is IDO 5.3 at `-g`, so it is unoptimised. IDO writes no symbol for a static
   function, so the ELF is relinked keeping `.mdebug` and N64Recomp reads them from there (`use_mdebug`). Its `.mdebug`
