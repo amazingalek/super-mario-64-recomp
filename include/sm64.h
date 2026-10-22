@@ -18,6 +18,10 @@ namespace sm64 {
     // The enhancements' settings the natives read (src/game/recomp_api.cpp).
     bool reduced_input_lag();
     uint32_t level_of_detail_divisor();
+
+    // Hi-res Font (hires_font.cpp): set up the generated texture pack in the app folder, then turn it on or off.
+    void init_hires_font();
+    void set_hires_font(bool on);
 }
 
 #endif

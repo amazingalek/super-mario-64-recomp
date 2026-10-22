@@ -30,3 +30,5 @@ __pycache__/
 /mods/
 /*.log
 /*.bak
+# Generated at run time from the ROM: Hi-res Font's pack (src/game/hires_font.cpp)
+/hires_font/
