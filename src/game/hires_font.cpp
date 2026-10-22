@@ -81,7 +81,8 @@ constexpr TextList text_lists[] = {
     { 0x03029480, 0x030295A0 },  // dl_power_meter_base, dl_power_meter_health_segments_end
 };
 
-// Off by default, as the option (Original): its change callback doesn't run on a first launch, before there is a saved config.
+// Off by default, as the option (Original): its change callback doesn't run on a first launch, before there is a saved
+// config.
 std::atomic<bool> enabled{ false };
 std::filesystem::path pack_dir;
 // Every hash already handled: in the pack, or drawn but not wanted (empty, or a format left alone).
