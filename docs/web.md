@@ -12,8 +12,9 @@ game a page, `tools/build_web.sh`, the prebuilt shader list (`src/rt64_shaders.t
 (`tools/play_plan.json`, `tools/play_plan_extended.json`) and the survey that drives them all
 (`patches/shader_survey.c`, `tools/shader_survey.js`). The rest is N64Recomp-browser's: `docs/porting.md` (WebGPU and
 the shaders, prebuilt shader lists, Emscripten), `docs/playing.md` (playing and measuring a page), `docs/forks.md` and
-`docs/findings.md`. While this repo is private every play of the page is a line in `plays.pending.jsonl` here, in
-N64Recomp-browser's `plays.jsonl` form (game `sm64`), to move there when the page is public.
+`docs/findings.md`. The page plays at [amazingalek.github.io/super-mario-64-recomp](https://amazingalek.github.io/super-mario-64-recomp/),
+published by N64Recomp-browser's `tools/publish_pages.sh`, and every play of it is a line in N64Recomp-browser's
+`plays.jsonl` (game `sm64`).
 
 ## Build it
 
@@ -92,7 +93,7 @@ starts.
 
 Every place in the list was reached and played on the page as its section was recorded, in headless Chrome at
 1256x645 on a desktop GPU from a fresh profile. Then every section was played again with shots, uncapped, and the shots
-looked at (`plays.pending.jsonl`, notes `level sweep`): the 15 courses at every act's start and in their other areas
+looked at (N64Recomp-browser's `plays.jsonl`, notes `level sweep`): the 15 courses at every act's start and in their other areas
 (Dire, Dire Docks' and Wet-Dry World's second through the floors that take Mario there, Tall, Tall Mountain's slide),
 the castle's three floors room by room, the courtyard and the grounds, Peach's slide, the three cap stages, Wing Mario
 Over the Rainbow, the aquarium, the three Bowser fights (Bowser beaten, his key or the grand star taken, its cutscene,
@@ -135,7 +136,7 @@ in either browser.
 
 The page keeps every enhancement at the desktop's default (README, Modern enhancements): none costs it a frame. Each was
 measured at Original against the defaults, the regular plan played in turn in headless Chrome on a desktop GPU at the
-stand-in's 3840x2000 canvas, uncapped, an idle host (`plays.pending.jsonl`, sets `sm64-opts-<option>`), and the game
+stand-in's 3840x2000 canvas, uncapped, an idle host (N64Recomp-browser's `plays.jsonl`, sets `sm64-opts-<option>`), and the game
 made 30.0 frames a second in every play, with no shader missed and no WebGPU error. Uncapped, every play's median was
 337-359 presents a second, the ceiling, so what an option costs shows in how busy the GPU was (nvidia-smi's medians),
 the defaults first:
@@ -161,32 +162,3 @@ and no exception.
 Framerate and Resolution weren't measured: every page interpolates to the display's rate and draws at the canvas's size
 (N64Recomp-browser's CLAUDE.md), which the defaults, Display and Auto, are.
 
-## For N64Recomp-browser
-
-When the repo is public, these move to N64Recomp-browser: the page's part of `docs/game-forks.md`, the Games table's
-row, and `plays.pending.jsonl`'s lines into `plays.jsonl`.
-
-The part for `docs/game-forks.md`, after the last game's:
-
-> `amazingalek/super-mario-64-recomp` is this project's own recomp of Super Mario 64 (USA 1.0), from the n64decomp/sm64
-> symbols, with RecompFrontend's launcher and menus, on upstream's rt64, N64ModernRuntime and RecompFrontend patched by
-> the N64Recomp-browser tag its `lib/N64Recomp-browser` pins, with `frontend/build_speed.cmake`. Its patches (MIPS C
-> against the decomp's headers) tag every matrix for RT64's interpolation, widen the view, the HUD and the sky to the
-> window's shape, and keep a few modern options, each with an Original value; the page keeps them all at the desktop's
-> defaults, which cost it nothing measured. Render to RAM is off: the game never reads a frame it drew. Its list is 189
-> shaders: the boot (the launcher, the logo, the title's Mario head, the file select, 29) and 33 sections (the castle
-> grounds, the castle's floors, the courtyard, the 15 courses at each act, the secret and Bowser stages), recorded by
-> `tools/shader_plan.json`, which warps Mario into each from the castle grounds through the survey in
-> `patches/shader_survey.c`. IDO narrows a char or short argument in the
-> function that takes it, so a patch replacing a game function whose caller passes a wider value takes it as a word (its
-> CLAUDE.md, Narrow arguments). Its docs/web.md and the headers of `tools/build_web.sh`, `tools/shader_survey.js` and
-> `src/rt64_shaders.txt` have the rest.
-
-In The games' own frame rates, Super Mario 64 joins the cartridge's: 30, two VIs a frame.
-
-The Games table's row, its page where `tools/publish_page.sh` would put it. The cells are the stand-in's (`--uncapped
---size 3840x2000 --play 25`, the title's Mario head) on this page built on v0.86.0, until a published page is played:
-
-```
-| Super Mario 64 | this project's own recomp | [super-mario-64-recomp](https://github.com/amazingalek/super-mario-64-recomp) | [play](https://amazingalek.github.io/super-mario-64-recomp/) | 356* | 352* | 2026-10-22, v0.86.0 |
-```

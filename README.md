@@ -10,14 +10,17 @@ A native PC port of the N64 *Super Mario 64* (USA), made by static recompilation
 and menus): the game's own MIPS code translated to C and run natively, with RT64 drawing it. The symbols come from the
 [n64decomp/sm64](https://github.com/n64decomp/sm64) decompilation. It is not an emulator.
 
-**This repo is private for now**, and it holds no ROM, no asset from the game and no data extracted from it: you
-supply your own ROM, and nothing in git or CI is made from one except the symbol names and addresses in `syms/`.
+The repo holds no ROM, no asset from the game and no data extracted from it: you supply your own ROM, and nothing in
+git or CI is made from one except the symbol names and addresses in `syms/`.
 
 **Status:** the desktop build plays: sound (the audio microcode recompiled), saves (EEPROM, kept across restarts) and
 keyboard and gamepad input, drawn at the display's rate (the game runs at 30 and RT64 interpolates the frames between,
 with nothing smeared at camera cuts, warps or spawns). Bob-omb Battlefield has been played from the file select
 through King Bob-omb's star and back to the castle. It also builds into a web page (Chrome and Firefox, through WebGPU)
-that plays the same: [docs/web.md](docs/web.md).
+that plays the same.
+
+**The web page plays at [amazingalek.github.io/super-mario-64-recomp](https://amazingalek.github.io/super-mario-64-recomp/)**,
+from your own ROM through its Load ROM ([docs/web.md](docs/web.md)).
 
 ## Modern enhancements
 
