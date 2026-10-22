@@ -67,12 +67,13 @@ Each ends with the game's own frame rate over its courses (`rate()`). Play them 
 
 ## The shader list
 
-`src/rt64_shaders.txt` holds 143 shaders, which RT64 builds as 111 pipelines, in 18 sections of 288 lines (a shader is
+`src/rt64_shaders.txt` holds 145 shaders, which RT64 builds as PIPELINES pipelines, in 18 sections of 290 lines (a shader is
 in each section that draws it): the boot's (the launcher, the logo, the title's Mario head, the file select), the castle
 grounds', the castle's and one for each of the 15 courses. It was recorded in headless Chrome at 1256x645 by
 `tools/record_shaders.sh`, a page load a section; its header says what each section played and what it leaves out. The
-plans' plays then missed one more, in Bob-omb Battlefield in Chrome, added by hand at the end of the boot's section.
-With it neither plan misses a shader in either browser. Chrome builds the whole list behind the launcher in about 5 s,
+plans' plays then missed three more, added by hand at the end of the boot's section: one in Bob-omb Battlefield in
+Chrome, and two of the title's and the file select's text in both browsers once Hi-res Font set the text tiles to clamp,
+which changes their sampler flags. With them neither plan misses a shader in either browser. Chrome builds the whole list behind the launcher in about 5 s,
 so the game never waits. Firefox builds none there: it waits 2 s for the boot's section before the game's first frame,
 1.4 s for the castle grounds' as file A starts, and 0.3-0.4 s for a course's as it starts.
 
@@ -102,6 +103,11 @@ the defaults first:
 - Copy Frames to RAM: 343.5 and 80%, against 342.3 and 81%. The game never reads a frame back, so Off (the default)
   copies none.
 - MS Anti-Aliasing: 343.3 and 80%, against 345.5 and 79% with None.
+
+Hi-res Font (On by default) makes its textures on the page as on the desktop, into the app folder, which the page keeps
+in the browser's IndexedDB: a first visit upscales the text as it meets it (about 90 textures over the regular plan), a
+later one loads them. The regular plan played with it On, in Chrome and Firefox at 3840x2000, makes them with no WebGPU
+error and no exception.
 
 Framerate and Resolution weren't measured: every page interpolates to the display's rate and draws at the canvas's size
 (N64Recomp-browser's CLAUDE.md), which the defaults, Display and Auto, are.

@@ -17,7 +17,9 @@
 # course draws further in than its start, and the ending (RT64 builds those when the game first asks for them). Flags
 # follow settings (filtering, HDR, MSAA, upscaling), so a change to one of those defaults means recording again. The
 # plays' misses (N64Recomp-browser's tools/play_page.mjs names each) are added by hand at the end of the boot's section,
-# which the page builds before the game starts: one, in Bob-omb Battlefield in Chrome.
+# which the page builds before the game starts: one, in Bob-omb Battlefield in Chrome, and two of the title's and the
+# file select's text in both browsers once Hi-res Font sets the text tiles to clamp (src/game/hires_font.cpp), which
+# changes their sampler flags.
 00552078 00882c3f fc127e24 fffff9fc 088a000c
 00552078 00882c3f fcffffff fffe793c 0800000c
 005041c8 00882c3f fcffffff fffcfa7d 0ccb540c
@@ -37,6 +39,8 @@
 005041c8 00800c3f fc129a25 ff37ffff 04cb540b
 00553048 00882c3f fcffffff fffcf279 0ccb540c
 00442078 00882c3f fc127e24 fffff9fc 088a0008
+005041c9 00a02c3f fc30b261 44664924 04cb540b
+00504240 00880c3f fc129a25 ff37ffff 0ccb540c
 section grounds
 0f0a4000 00882c3f fc127e24 fffff9fc 0ccb540c
 00552078 00882c3f fc127e24 fffff9fc 0ccb540c
