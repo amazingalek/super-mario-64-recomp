@@ -23,8 +23,9 @@ This repo is the game: its recompilation, the patches over it, the desktop build
   (`runtime-patches/`, its README lists them). `xbrz` is xBRZ, vendored, for Hi-res Font.
 - `docs/web.md`: the web page: building it (`tools/build_web.sh`), the survey a script drives it by
   (`patches/shader_survey.c`, `tools/shader_survey.js`), the play plans (`tools/play_plan*.json`), the prebuilt shader
-  list (`src/rt64_shaders.txt`), what the page measured, and what moves to N64Recomp-browser when the repo is public.
-  Every play of the page is a line in `plays.pending.jsonl` (`play_page.mjs --record plays.pending.jsonl --game sm64`).
+  list (`src/rt64_shaders.txt`) and what the page measured. The page's part of N64Recomp-browser (its Games row, its
+  part of `docs/game-forks.md`, `tools/publish_pages.sh`'s `sm64`) is there, and every play of the page is a line in
+  N64Recomp-browser's `plays.jsonl` (`play_page.mjs --record plays.jsonl --game sm64`), never here.
 - Comments beside the code, for how and why: each file's header. Read the header of the file you change and update
   it in the same commit.
 
@@ -34,8 +35,8 @@ This repo is the game: its recompilation, the patches over it, the desktop build
   from the decomp's `assets/` or its build is committed but `syms/`. The launcher's art is text only (`icons/`): no
   logo, character or picture from the game.
 - The decomp is built only where the ROM is, never in CI.
-- The repo is private. Until it goes public nothing public names or links it, CI is Linux only, and there are no
-  releases or Pages.
+- The page is built where the ROM is and published to this repo's Pages (`gh-pages`) by N64Recomp-browser's
+  `tools/publish_pages.sh` (its `docs/publishing.md`), its `.data` holding nothing from the ROM. There are no releases.
 - The scope is the game as it plays, plus what a web page needs (RT64 interpolation to the display's rate, resolution
   Auto), plus the README's Modern enhancements: each an option with an Original value that plays as the console does,
   none changing how the game plays. No camera changes, cheats or 60 fps logic. USA 1.0 only.
