@@ -39,8 +39,9 @@
 //   projection one per projection node, so a field of view change and the sky's scroll are blended too.
 // - The skybox (create_skybox_facing_camera): the sky scrolls by an orthographic projection over a 3x3 grid of tiles that
 //   just covers the screen, so a blended scroll would uncover the grid's edge; it draws a ring of tiles more (outside the
-//   screen, so nothing changes at the game's own rate), and its scroll wraps once per turn of the camera, so the scroll
-//   is unwrapped (sSkyWraps) to blend across the wrap.
+//   screen, so nothing changes at the game's own rate), and as many columns more as a window wider than 4:3 shows
+//   (widescreen.c). Its scroll wraps once per turn of the camera, so the scroll is unwrapped (sSkyWraps) to blend
+//   across the wrap.
 // - The HUD (render_dl_power_meter): the power meter slides in and out by a matrix of its own. The rest of the HUD is
 //   text and rectangles at fixed places.
 // - Dialogs and menus (render_menus_and_dialogs): a matrix per letter, all one group paired in drawing order, its id
@@ -413,7 +414,7 @@ RECOMP_PATCH void geo_process_node_and_siblings(struct GraphNode *firstNode) {
 #define SKYBOX_COLS (10)
 #define SKYBOX_ROWS (8)
 
-// The game's 3x3 tiles and a ring around them: 5x5.
+// The game's 3 rows of tiles and a ring around them: 5. The columns are widescreen_sky_columns's, 5 at 4:3.
 #define SKYBOX_GRID 5
 
 struct Skybox {
@@ -460,7 +461,8 @@ RECOMP_PATCH Gfx *create_skybox_facing_camera(s8 player, s8 background, f32 fov,
     f32 cameraFaceY = focY - posY;
     f32 cameraFaceZ = focZ - posZ;
     s8 colorIndex = 1;
-    s32 dlCommandCount = 5 + (SKYBOX_GRID * SKYBOX_GRID) * 7;
+    s32 dlCommandCount;
+    s32 columns;
     Gfx *skybox;
     Gfx *dlist;
     Mtx *ortho;
@@ -497,6 +499,10 @@ RECOMP_PATCH Gfx *create_skybox_facing_camera(s8 player, s8 background, f32 fov,
     sSkyLastX = scrollX;
     scrollY = sSkyBoxInfo[player].scaledY;
 
+    // The game's top left tile is the one at the scroll; the ring starts one before it, and a screen wider than 4:3
+    // (widescreen.c) needs more columns.
+    columns = widescreen_sky_columns(scrollX, &firstCol);
+    dlCommandCount = 5 + (SKYBOX_GRID * columns) * 7;
     skybox = alloc_display_list(dlCommandCount * sizeof(Gfx));
     ortho = alloc_display_list(sizeof(*ortho));
     if (skybox == NULL || ortho == NULL) {
@@ -509,14 +515,12 @@ RECOMP_PATCH Gfx *create_skybox_facing_camera(s8 player, s8 background, f32 fov,
     gSPMatrix(dlist++, VIRTUAL_TO_PHYSICAL(ortho), G_MTX_PROJECTION | G_MTX_MUL | G_MTX_NOPUSH);
     gSPDisplayList(dlist++, dl_skybox_tile_tex_settings);
 
-    // The game's top left tile is the one at the scroll; the ring starts one before it.
-    firstCol = (s32) (scrollX / SKYBOX_TILE_WIDTH) - (scrollX < 0.0f ? 1 : 0) - 1;
     firstRow = (SKYBOX_HEIGHT - (s32) scrollY) / SKYBOX_TILE_HEIGHT - 1;
     for (row = firstRow; row < firstRow + SKYBOX_GRID; row++) {
         if (row < 0 || row >= SKYBOX_ROWS) {
             continue;
         }
-        for (col = firstCol; col < firstCol + SKYBOX_GRID; col++) {
+        for (col = firstCol; col < firstCol + columns; col++) {
             s32 texCol = ((col % 8) + 8) % 8;
             const u8 *const texture =
                 (*(SkyboxTexture *) segmented_to_virtual(sSkyboxTextures[background]))[row * SKYBOX_COLS + texCol];

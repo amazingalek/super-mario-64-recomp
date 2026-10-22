@@ -17,6 +17,7 @@
 #define osRecvMesg osRecvMesg_recomp
 #define osPiStartDma osPiStartDma_recomp
 #define osInvalDCache osInvalDCache_recomp
+#define osViSwapBuffer osViSwapBuffer_recomp
 
 #include <ultra64.h>
 #include "macros.h"
@@ -25,5 +26,13 @@
 // The game's natives (src/game/recomp_api.cpp).
 void recomp_load_overlays(u32 rom, void* ram, u32 size);
 void recomp_yield(void);
+f32 recomp_get_aspect_ratio(f32 original);
+f32 recomp_get_hud_aspect_ratio(f32 original);
+s32 recomp_get_reduced_input_lag(void);
+s32 recomp_get_lod_divisor(void);
+
+// widescreen.c, for the other patches.
+f32 widescreen_aspect(void);
+s32 widescreen_sky_columns(f32 scrollX, s32 *firstCol);
 
 #endif
