@@ -37,10 +37,12 @@
   "Bob-omb Battlefield in Chrome, two of the title's and the file select's text in both browsers once Hi-res Font sets the",
   "text tiles to clamp (src/game/hires_font.cpp), which changes their sampler flags, five that the levels' recordings",
   "missed and their plays drew (a death exit's fade into a castle room, two; Bowser in the Fire Sea's key, two; the start",
-  "of Bowser in the Sky) and two of Mario with the vanish cap. At the end of their own sections, those of a play of every",
-  "level with shots: Bowser in the Fire Sea's six (Bowser fading as he teleports), one each in the basement and the second",
-  "floor as Mario leaves Hazy Maze Cave and Tiny-Huge Island, one at Dire, Dire Docks' floor into its second area, and one",
-  "of the castle's first floor in Firefox."
+  "of Bowser in the Sky), two of Mario with the vanish cap, and one of the file select's text with Hi-res Font Original,",
+  "the default (its tiles' wrap, where On clamps them: a text shader is in the list both ways). At the end of their own",
+  "sections, those of a play of every level with shots: Bowser in the Fire Sea's six (Bowser fading as he teleports), one",
+  "each in the basement and the second floor as Mario leaves Hazy Maze Cave and Tiny-Huge Island, one at Dire, Dire",
+  "Docks' floor into its second area, and one of the castle's first floor in Firefox; and one of the regular plan's",
+  "Bob-omb Battlefield in Firefox."
  ],
  "load": [
   ["wait", 8000]
