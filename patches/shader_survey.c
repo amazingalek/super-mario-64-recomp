@@ -21,6 +21,9 @@
 
 void initiate_warp(s16 destLevel, s16 destArea, s16 destWarpNode, s32 arg3);
 
+// level_update.c's, which its header leaves out.
+#define PLAY_MODE_NORMAL 0
+
 struct ShaderSurvey {
     u32 magic[2];
     volatile s32 request;
