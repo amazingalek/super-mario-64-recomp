@@ -7,8 +7,9 @@
 // once the game has taken the request and is in that level (a course is then at its act select), false after ms;
 // inControl(), true once Mario is in a level, the game plays normally and his action is no cutscene's (an intro, a
 // dialog, a door, a painting's entry); clock(), the game's frame count (gGlobalTimer, 30 a second of its own time),
-// for a plan's ["clock", "clock()", 30]; and setInvincible(), which keeps Mario's health full for as long as the page
-// runs; and fileSelect(), true while the file select shows with its cursor on file A, where it opens.
+// for a plan's ["clock", "clock()", 30]; setInvincible(), which keeps Mario's health full for as long as the page
+// runs; fileSelect(), true while the file select shows with its cursor on file A, where it opens; and mark() and
+// rate(), which say how many frames a second the game made from the one to the other: its own rate as the page plays.
 (() => {
   const magic = (a) => n64r(a) === 0x534d3634 && n64r(a + 4) === 0x53525659;
   if (!window.__survey) {
@@ -42,6 +43,11 @@
   // the file select opens on a new boot, and nothing else puts both of those values there.
   const f32 = (a) => new Float32Array(new Uint32Array([n64r(a)]).buffer)[0];
   window.fileSelect = () => f32(0x801a7d1c) === -94 && f32(0x801a7d20) === 46;
+  window.mark = () => { window.__mark = [window.clock(), performance.now()]; return 'clock ' + window.__mark[0]; };
+  window.rate = () => {
+    const [frames, ms] = [window.clock() - window.__mark[0], performance.now() - window.__mark[1]];
+    return `${frames} game frames in ${(ms / 1000).toFixed(1)} s: ${(frames * 1000 / ms).toFixed(1)} a second`;
+  };
   window.setInvincible = () => { n64w(s + 28, 1); return 'level ' + window.level(); };
   return s ? 'survey at ' + s.toString(16) : 'no survey struct: a page built without patches/shader_survey.c';
 })()
