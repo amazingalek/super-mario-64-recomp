@@ -6,7 +6,7 @@ needs: the rules, where things are, and the facts about the game the code can't 
 
 ## What lives where
 
-This repo is the game: its recompilation, the patches over it, the desktop build, and later its web page.
+This repo is the game: its recompilation, the patches over it, the desktop build and its web page.
 
 - `syms/`: the symbols N64Recomp reads, generated (never edited by hand) by `tools/build_decomp.sh` then
   `tools/gen_syms.sh` (`tools/gen_syms.py` says how).
@@ -20,6 +20,10 @@ This repo is the game: its recompilation, the patches over it, the desktop build
   `RecompFrontend` at the commits N64Recomp-browser's web forks are built on, and `N64Recomp-browser` at a release tag.
   The web support every recomp's page shares is developed and documented there; `tools/build_n64recomp.sh` and
   `CMakeLists.txt` apply its `patches/` to the other three.
+- `docs/web.md`: the web page: building it (`tools/build_web.sh`), the survey a script drives it by
+  (`patches/shader_survey.c`, `tools/shader_survey.js`), the play plans (`tools/play_plan*.json`), the prebuilt shader
+  list (`src/rt64_shaders.txt`), what the page measured, and what moves to N64Recomp-browser when the repo is public.
+  Every play of the page is a line in `plays.pending.jsonl` (`play_page.mjs --record plays.pending.jsonl --game sm64`).
 - Comments beside the code, for how and why: each file's header. Read the header of the file you change and update
   it in the same commit.
 

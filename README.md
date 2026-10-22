@@ -16,7 +16,8 @@ supply your own ROM, and nothing in git or CI is made from one except the symbol
 **Status:** the desktop build plays: sound (the audio microcode recompiled), saves (EEPROM, kept across restarts) and
 keyboard and gamepad input, drawn at the display's rate (the game runs at 30 and RT64 interpolates the frames between,
 with nothing smeared at camera cuts, warps or spawns). Bob-omb Battlefield has been played from the file select
-through King Bob-omb's star and back to the castle. No web page yet.
+through King Bob-omb's star and back to the castle. It also builds into a web page (Chrome and Firefox, through WebGPU)
+that plays the same: [docs/web.md](docs/web.md).
 
 ## Modern enhancements
 
@@ -94,6 +95,10 @@ ninja -C build SuperMario64Recompiled
 
 The symbols in `syms/` are made from the decomp's own build of the game (`tools/build_decomp.sh`, which needs the ROM
 and Docker, then `tools/gen_syms.sh`). They only change when `lib/sm64` moves.
+
+The web page is built on Linux with Docker by `tools/build_web.sh`, through
+[N64Recomp-browser](https://github.com/amazingalek/N64Recomp-browser) in `lib/N64Recomp-browser`:
+[docs/web.md](docs/web.md) says how, and how to serve and play it.
 
 ## License
 
