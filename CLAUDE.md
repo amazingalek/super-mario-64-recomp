@@ -6,7 +6,7 @@ needs: the rules, where things are, and the facts about the game the code can't 
 
 ## What lives where
 
-This repo is the game: its recompilation, the patches over it, the desktop build, and later its web page.
+This repo is the game: its recompilation, the patches over it, the desktop build and its web page.
 
 - `syms/`: the symbols N64Recomp reads, generated (never edited by hand) by `tools/build_decomp.sh` then
   `tools/gen_syms.sh` (`tools/gen_syms.py` says how).
@@ -20,6 +20,10 @@ This repo is the game: its recompilation, the patches over it, the desktop build
   `RecompFrontend` at the commits N64Recomp-browser's web forks are built on, and `N64Recomp-browser` at a release tag.
   The web support every recomp's page shares is developed and documented there; `tools/build_n64recomp.sh` and
   `CMakeLists.txt` apply its `patches/` to the other three.
+- `docs/web.md`: the web page: building it (`tools/build_web.sh`), the survey a script drives it by
+  (`patches/shader_survey.c`, `tools/shader_survey.js`), the play plans (`tools/play_plan*.json`), the prebuilt shader
+  list (`src/rt64_shaders.txt`), what the page measured, and what moves to N64Recomp-browser when the repo is public.
+  Every play of the page is a line in `plays.pending.jsonl` (`play_page.mjs --record plays.pending.jsonl --game sm64`).
 - Comments beside the code, for how and why: each file's header. Read the header of the file you change and update
   it in the same commit.
 
@@ -56,7 +60,12 @@ This repo is the game: its recompilation, the patches over it, the desktop build
 - **Busy waits.** ultramodern runs one game thread at a time and preempts none, so a loop that waits for another
   game thread has to yield (`recomp_yield`). `wait_for_audio_frames`, where the game waits for the sound thread
   while it resets the audio, is the one met so far (`patches/audio.c`).
-- **Stubs.** `us.toml` stubs four functions whose code doesn't recompile or calls what the runtime lacks: debug and
+- **Narrow arguments.** IDO narrows an s8, u8, s16 or u16 argument in the function that takes it, so the game's
+  callers pass whatever the register holds; clang's code assumes the caller narrowed it. A patch replacing a game
+  function whose caller passes a wider value takes that argument as an s32 and narrows it itself:
+  `create_skybox_facing_camera` gets the background node's word, the background twice, and indexed the sky's lists
+  with it otherwise (`patches/interpolation.c`).
+- **Stubs.** `us.toml` stubs three functions whose code doesn't recompile or calls what the runtime lacks: debug and
   never-called code, each with its reason there.
 - **The symbols.** The decomp's US build is IDO 5.3 at `-g`, so it is unoptimised. IDO writes no symbol for a static
   function, so the ELF is relinked keeping `.mdebug` and N64Recomp reads them from there (`use_mdebug`). Its `.mdebug`

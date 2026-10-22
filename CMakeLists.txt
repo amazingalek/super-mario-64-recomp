@@ -1,5 +1,7 @@
-# Super Mario 64: Recompiled, the desktop program: the recompiled game (RecompiledFuncs/, from tools/recompile.sh), the
-# patches over it (patches/, PatchesLib), and RecompFrontend's launcher and menus on RT64.
+# Super Mario 64: Recompiled: the recompiled game (RecompiledFuncs/, from tools/recompile.sh), the patches over it
+# (patches/, PatchesLib), and RecompFrontend's launcher and menus on RT64. The desktop program, and with Emscripten
+# (emcmake cmake; tools/build_web.sh) the page, SuperMario64Recompiled.html, through lib/N64Recomp-browser/frontend
+# (docs/web.md).
 cmake_minimum_required(VERSION 3.20)
 
 if (APPLE)
@@ -30,6 +32,26 @@ if (CMAKE_VERSION VERSION_GREATER_EQUAL "3.24.0")
     cmake_policy(SET CMP0135 NEW)
 endif()
 
+if (EMSCRIPTEN)
+    # Threads are pthreads (SharedArrayBuffer), and the runtime ends a game thread by throwing. -msimd128 is the web's
+    # -march=nehalem: wasm SIMD, which every browser with WebGPU has, for hlslpp's wasm backend and the
+    # auto-vectorizer. -mtail-call is wasm's tail calls: with it the recompiled code's jumps to other functions are
+    # return_calls (N64Recomp-web's RECOMP_TAIL_CALL), not calls that grow the stack (N64Recomp-browser's README, "What
+    # the build needs").
+    add_compile_options(-pthread -fwasm-exceptions -msimd128 -mtail-call)
+    # With -msimd128 xxHash would take its NEON path through Emscripten's arm_neon.h, which it includes inside its
+    # extern "C", where the C++ headers that reaches don't compile. XXH_HAS_INCLUDE is used for nothing else.
+    add_compile_options("-DXXH_HAS_INCLUDE(x)=0")
+    add_link_options(-pthread -fwasm-exceptions -mtail-call)
+    # ccache when it is on PATH, hitting across checkouts (its header says how).
+    include(${CMAKE_SOURCE_DIR}/lib/N64Recomp-browser/frontend/build_speed.cmake)
+    # The shaders the page specializes at build time and builds before the game needs them, in sections: the boot's
+    # before the first frame, each course's when it first draws (src/rt64_shaders.txt says how it was recorded).
+    if (EXISTS ${CMAKE_SOURCE_DIR}/src/rt64_shaders.txt)
+        set(RT64_PREBUILT_SHADER_LIST ${CMAKE_SOURCE_DIR}/src/rt64_shaders.txt)
+    endif()
+endif()
+
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 
@@ -54,6 +76,12 @@ add_subdirectory(${CMAKE_SOURCE_DIR}/lib/rt64 ${CMAKE_BINARY_DIR}/rt64)
 set(BUILD_SHARED_LIBS OFF)
 add_subdirectory(${CMAKE_SOURCE_DIR}/lib/N64ModernRuntime)
 
+if (EMSCRIPTEN)
+    add_subdirectory(${CMAKE_SOURCE_DIR}/lib/N64Recomp-browser/frontend ${CMAKE_BINARY_DIR}/web_frontend)
+    # fmt 11.1 (N64Recomp's) leans on <cstdlib> arriving through other headers, which Emscripten's libc++ doesn't do.
+    target_compile_options(fmt PRIVATE -include cstdlib)
+endif()
+
 target_include_directories(rt64 PRIVATE ${CMAKE_BINARY_DIR}/rt64/src)
 
 # RecompiledFuncs: the game's code, from N64Recomp us.toml, and its audio microcode, from RSPRecomp aspMain.us.toml
@@ -68,6 +96,11 @@ target_compile_options(RecompiledFuncs PRIVATE
 # The microcode's vector unit (librecomp's rsp_vu_impl.hpp) uses SSE4.1 on x86-64, as the program does.
 if (CMAKE_SIZEOF_VOID_P EQUAL 8 AND CMAKE_SYSTEM_PROCESSOR MATCHES "x86_64|amd64|AMD64")
     target_compile_options(RecompiledFuncs PRIVATE -march=nehalem)
+endif()
+# A call to an undeclared function links to a trap in WebAssembly, so it is an error there (N64Recomp-web's funcs.h
+# declares every function the recompiled code calls).
+if (EMSCRIPTEN)
+    target_compile_options(RecompiledFuncs PRIVATE -Werror=implicit-function-declaration)
 endif()
 
 target_include_directories(RecompiledFuncs PRIVATE
@@ -117,13 +150,24 @@ if (SM64_PATCHES)
         BYPRODUCTS ${CMAKE_SOURCE_DIR}/patches/patches.elf
     )
 
+    # The recompiler runs where the build does: for the page that is tools/recompile.sh's native N64Recomp, not the
+    # runtime's target, which Emscripten would build for the browser.
+    if (EMSCRIPTEN)
+        set(SM64_N64RECOMP ${CMAKE_SOURCE_DIR}/build/n64recomp/N64Recomp)
+        # The patches call the game's functions: undeclared, a call links to a trap in WebAssembly.
+        target_compile_options(PatchesLib PRIVATE -Werror=implicit-function-declaration
+            "SHELL:-include ${CMAKE_SOURCE_DIR}/RecompiledFuncs/funcs.h")
+    else()
+        set(SM64_N64RECOMP N64RecompCLI)
+    endif()
+
     add_custom_command(OUTPUT
             ${CMAKE_SOURCE_DIR}/patches/patches.bin
             ${CMAKE_SOURCE_DIR}/RecompiledPatches/patches.c
             ${CMAKE_SOURCE_DIR}/RecompiledPatches/recomp_overlays.inl
             ${CMAKE_SOURCE_DIR}/RecompiledPatches/funcs.h
         COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_SOURCE_DIR}/RecompiledPatches
-        COMMAND N64RecompCLI patches.toml
+        COMMAND ${SM64_N64RECOMP} patches.toml
         WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
         DEPENDS ${CMAKE_SOURCE_DIR}/patches/patches.elf ${CMAKE_SOURCE_DIR}/patches.toml
     )
@@ -300,7 +344,17 @@ target_link_libraries(SuperMario64Recompiled PRIVATE
     librecomp
     ultramodern
     rt64
-    nfd
 )
+
+if (EMSCRIPTEN)
+    # The page (lib/N64Recomp-browser/frontend), with the menus' fonts and icons and the controller mappings in its .data
+    # file. No ROM: the player picks theirs in the launcher, and it stays in the browser.
+    n64recomp_browser_frontend_page(SuperMario64Recompiled)
+    target_link_options(SuperMario64Recompiled PRIVATE
+        "SHELL:--preload-file ${CMAKE_SOURCE_DIR}/assets@/assets"
+        "SHELL:--preload-file ${CMAKE_SOURCE_DIR}/recompcontrollerdb.txt@/recompcontrollerdb.txt")
+else()
+    target_link_libraries(SuperMario64Recompiled PRIVATE nfd)
+endif()
 
 set_property(TARGET SuperMario64Recompiled PROPERTY VS_DEBUGGER_WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}")

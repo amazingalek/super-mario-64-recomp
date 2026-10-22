@@ -10,7 +10,9 @@
 #include <stdexcept>
 #include <cinttypes>
 
-#include "nfd.h"
+#ifndef __EMSCRIPTEN__
+#include "nfd.h" // a browser has no native file dialogs; RecompFrontend asks the page instead
+#endif
 
 #include "ultramodern/ultra64.h"
 #include "ultramodern/ultramodern.hpp"
@@ -34,6 +36,9 @@
 #include "recompui/renderer.h"
 #include "recompui/config.h"
 #include "util/file.h"
+#ifdef __EMSCRIPTEN__
+#include "audio_output.h"
+#endif
 #include "recompinput/input_events.h"
 #include "recompinput/recompinput.h"
 #include "recompinput/profiles.h"
@@ -69,7 +74,13 @@ ultramodern::gfx_callbacks_t::gfx_data_t create_gfx() {
     SDL_SetHint(SDL_HINT_MOUSE_FOCUS_CLICKTHROUGH, "1");
     SDL_SetHint(SDL_HINT_JOYSTICK_ALLOW_BACKGROUND_EVENTS, "1");
 
-    if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMECONTROLLER | SDL_INIT_JOYSTICK | SDL_INIT_HAPTIC) < 0) {
+    // Emscripten's SDL2 is built without haptics, and asking for them there fails the whole call, gamepads with it.
+#ifdef __EMSCRIPTEN__
+    const Uint32 sdl_subsystems = SDL_INIT_VIDEO | SDL_INIT_GAMECONTROLLER | SDL_INIT_JOYSTICK;
+#else
+    const Uint32 sdl_subsystems = SDL_INIT_VIDEO | SDL_INIT_GAMECONTROLLER | SDL_INIT_JOYSTICK | SDL_INIT_HAPTIC;
+#endif
+    if (SDL_Init(sdl_subsystems) < 0) {
         exit_error("Failed to initialize SDL2: %s\n", SDL_GetError());
     }
 
@@ -117,7 +128,8 @@ ultramodern::renderer::WindowHandle create_window(ultramodern::gfx_callbacks_t::
 
 #if defined(_WIN32)
     return ultramodern::renderer::WindowHandle{ wmInfo.info.win.window, GetCurrentThreadId() };
-#elif defined(__linux__) || defined(__ANDROID__)
+#elif defined(__linux__) || defined(__ANDROID__) || defined(__EMSCRIPTEN__)
+    // In a browser the window is the page's canvas, sized by the page.
     return ultramodern::renderer::WindowHandle{ window };
 #elif defined(__APPLE__)
     SDL_MetalView view = SDL_Metal_CreateView(window);
@@ -146,6 +158,27 @@ constexpr uint32_t duplicated_input_frames = 4;
 static uint32_t discarded_output_frames;
 
 constexpr uint32_t bytes_per_frame = input_channels * sizeof(float);
+
+// The page plays through N64Recomp-browser's audio output (frontend/audio_output.h), not SDL's queue: Emscripten's
+// SDL2 plays from the page's thread, where WebGPU's work runs, and its sound broke up whenever that thread was busy.
+// Both take and count whole output frames.
+#ifdef __EMSCRIPTEN__
+static uint64_t get_queued_audio_bytes() {
+    return uint64_t(n64recomp_browser::audio::queued_frames()) * output_channels * sizeof(float);
+}
+
+static void queue_audio(const float* samples, uint32_t byte_count) {
+    n64recomp_browser::audio::queue(samples, byte_count / (output_channels * sizeof(float)));
+}
+#else
+static uint64_t get_queued_audio_bytes() {
+    return SDL_GetQueuedAudioSize(audio_device);
+}
+
+static void queue_audio(const float* samples, uint32_t byte_count) {
+    SDL_QueueAudio(audio_device, samples, byte_count);
+}
+#endif
 
 void queue_samples(int16_t* audio_data, size_t sample_count) {
     static std::vector<float> swap_buffer;
@@ -181,7 +214,7 @@ void queue_samples(int16_t* audio_data, size_t sample_count) {
         throw std::runtime_error("Error using SDL audio converter");
     }
 
-    uint64_t cur_queued_microseconds = SDL_GetQueuedAudioSize(audio_device) / (output_channels * sizeof(float)) * 1000000 / output_sample_rate;
+    uint64_t cur_queued_microseconds = get_queued_audio_bytes() / (output_channels * sizeof(float)) * 1000000 / output_sample_rate;
     uint32_t num_bytes_to_queue = audio_convert.len_cvt - output_channels * discarded_output_frames * sizeof(swap_buffer[0]);
     float* samples_to_queue = swap_buffer.data() + output_channels * discarded_output_frames / 2;
 
@@ -198,14 +231,14 @@ void queue_samples(int16_t* audio_data, size_t sample_count) {
         }
     }
 
-    SDL_QueueAudio(audio_device, samples_to_queue, num_bytes_to_queue);
+    queue_audio(samples_to_queue, num_bytes_to_queue);
 }
 
 // What osAiGetLength reads: the frames queued, less a retrace's worth, so that the game makes enough to cover a late
 // one.
 size_t get_frames_remaining() {
     constexpr float buffer_offset_frames = 1.0f;
-    uint64_t buffered_byte_count = SDL_GetQueuedAudioSize(audio_device);
+    uint64_t buffered_byte_count = get_queued_audio_bytes();
     buffered_byte_count = buffered_byte_count * 2 * sample_rate / output_sample_rate / output_channels;
     uint32_t frames_per_vi = (sample_rate / 60);
     if (buffered_byte_count > (buffer_offset_frames * bytes_per_frame * frames_per_vi)) {
@@ -231,6 +264,9 @@ void set_frequency(uint32_t freq) {
 }
 
 void reset_audio(uint32_t output_freq) {
+#ifdef __EMSCRIPTEN__
+    output_freq = n64recomp_browser::audio::open(output_channels);
+#else
     SDL_AudioSpec spec_desired{
         .freq = (int)output_freq,
         .format = AUDIO_F32,
@@ -248,6 +284,7 @@ void reset_audio(uint32_t output_freq) {
         exit_error("SDL error opening audio device: %s\n", SDL_GetError());
     }
     SDL_PauseAudioDevice(audio_device, 0);
+#endif
 
     output_sample_rate = output_freq;
     update_audio_converter();
@@ -392,7 +429,9 @@ int main(int argc, char** argv) {
     SDL_setenv("SDL_AUDIODRIVER", "wasapi", false);
 #endif
 
+#ifndef __EMSCRIPTEN__
     NFD_Init();
+#endif
 
     recompui::programconfig::set_program_name(std::string{ sm64::program_name });
     recompui::programconfig::set_program_id(std::u8string{ sm64::program_id });
@@ -487,7 +526,9 @@ int main(int argc, char** argv) {
     cfg.threads_callbacks = { .get_game_thread_name = game_thread_name };
     recomp::start(cfg);
 
+#ifndef __EMSCRIPTEN__
     NFD_Quit();
+#endif
 
 #ifdef _WIN32
     timeEndPeriod(1);
