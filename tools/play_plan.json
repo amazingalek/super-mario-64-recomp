@@ -1,0 +1,31 @@
+{
+ "header": [
+  "draft"
+ ],
+ "page": "SuperMario64Recompiled.html",
+ "load": [["until", "RT64: all \\d+ prebuilt shaders built|once the game draws", 45000], ["wait", 5000]],
+ "setup": [["rom", 628, 364], ["wait", 3000]],
+ "start": [
+  ["click", 628, 364], ["until", "Initializing recomp heap", 30000], ["wait", 2000], ["evalFile", "shader_survey.js"],
+  ["wait", 6000], ["shot", "title.png"],
+  ["pressUntil", "Enter", "Enter", 13, 100, 1500, "fileSelect()", 60000], ["need", "fileSelect()"], ["wait", 2000],
+  ["shot", "file_select.png"]
+ ],
+ "play": [
+  ["pressUntil", "Space", " ", 32, 100, 1500, "level() === 16", 30000], ["need", "untilLevel(16, 1000)"],
+  ["clock", "clock()", 30], ["wait", 3000], ["shot", "intro.png"],
+  ["pressUntil", "Space", " ", 32, 100, 700, "inControl()", 90000], ["need", "inControl()"], ["eval", "setInvincible()"],
+  ["shot", "grounds.png"],
+  ["hold", "KeyW", "w", 87, 3000], ["hold", "KeyD", "d", 68, 1000], ["hold", "KeyW", "w", 87, 2000],
+  ["hold", "Space", " ", 32, 200], ["wait", 1000], ["hold", "ArrowLeft", "ArrowLeft", 37, 300], ["wait", 1500],
+  ["hold", "KeyS", "s", 83, 3000], ["hold", "KeyA", "a", 65, 2000], ["wait", 1000],
+  ["need", "warp(9, 1, 10, 30000)"], ["wait", 2000], ["shot", "act_select.png"],
+  ["pressUntil", "Space", " ", 32, 100, 1000, "inControl() && level() === 9", 60000], ["need", "level() === 9 && inControl()"],
+  ["shot", "bob.png"],
+  ["hold", "KeyW", "w", 87, 4000], ["hold", "KeyD", "d", 68, 1500], ["hold", "KeyW", "w", 87, 3000],
+  ["hold", "Space", " ", 32, 200], ["wait", 800], ["hold", "Space", " ", 32, 200], ["wait", 1500],
+  ["hold", "ArrowRight", "ArrowRight", 39, 300], ["wait", 1500], ["shot", "bob2.png"],
+  ["hold", "KeyA", "a", 65, 3000], ["hold", "KeyS", "s", 83, 4000], ["hold", "KeyW", "w", 87, 3000],
+  ["wait", 2000]
+ ]
+}
