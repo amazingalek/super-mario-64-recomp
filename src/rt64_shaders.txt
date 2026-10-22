@@ -16,7 +16,7 @@
 # the second floor, Snowman's Land, Wet-Dry World, Tall, Tall Mountain, Tiny-Huge Island, the wing and vanish caps'
 # stages, Wing Mario Over the Rainbow, the aquarium, the third floor, Tick Tock Clock, Rainbow Ride, Bowser in the Sky
 # and his fight. Each is warped into from the castle grounds by patches/shader_survey.c as its door or painting does
-# (tools/shader_survey.js, whose header says each helper), Mario kept at full health:
+# (tools/shader_survey.js, whose header says each helper), Mario kept at full health and a course's act given four lives:
 # - a course at the start of each of its first six acts (every course's stars and the save's doors and caps given, so
 #   each act and door opens), its act select taken with A: the first act's 25 s as in the grounds, about 8 s of each
 #   other act's, and of each of its other areas (one that no warp node leads to, Mario put above the floor that takes
