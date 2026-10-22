@@ -105,5 +105,9 @@ This repo is the game: its recompilation, the patches over it, the desktop build
     star's cutscene and 10 of 338 in a full turn of the camera; tagged, none of them did.
   - Untagged, the castle door flashes open for one frame as Mario reaches for it, and the camera's settling behind
     Mario as he lands in Bob-omb Battlefield holds a frame and then jumps twice. Tagged, neither does.
+  - Untagged, the dialogs' letters pair with any letter drawn with the same texture: in Lakitu's first dialog on the
+    castle bridge, the letters of "reporting live from just" that repeat elsewhere drew blank or as another letter in 8
+    to 17 of 24 captures, though every frame's list was the same. Tagged as one group in drawing order, none did, in
+    24 captures of that line and 40 through its page turn.
   - The skybox shows no uncovered edge through a full turn, and the door's star or circle wipe grows in half steps.
     Colour fades (the fade from white into a course) step at 30 as on a console: RT64 blends geometry, not colour.
