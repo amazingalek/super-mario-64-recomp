@@ -27,6 +27,13 @@
 //   tagged by the graph node that drew it and the object it was drawn for (the held object when there is one), so Mario,
 //   each limb, each object and the level's own geometry are each their own group. The camera is part of every one of
 //   these matrices (SM64 multiplies it into the modelview, geo_process_camera), so a camera turn is blended per matrix.
+//   A node a switch case picks is tagged by the switch: a coin's spin (geo_switch_anim_state) picks another of its
+//   display lists every frame, so tagged by that node a coin never paired with itself and was drawn where the newer
+//   frame has it, jumping against the blended world as the camera or Mario moved.
+// - Shadows (geo_process_shadow): a shadow's matrix moves to its object (Mario in the air, Lakitu hovering) and its
+//   vertices reach down from there to the floor, made again each frame. Blended matrices under the newer frame's
+//   vertices put the shadow half the object's step above or below the floor, where the floor hid it: it flickered as
+//   its object rose or fell. Its group blends the vertices too (the same count every frame), so both add up to the floor.
 // - Objects that teleport (geo_process_node_and_siblings): an object of the pool that moves further than
 //   TELEPORT_DISTANCE in one frame gets a new id. One that spawns needs nothing: the game frees an object's slot only
 //   after it was last drawn and spawns into it in a later frame, so a new object never pairs with the old.
@@ -58,12 +65,13 @@
 
 // Components each group blends. Matrices are decomposed (position, rotation and scale blended apart), and paired in the
 // order they are drawn within a group, so a display list that loads matrices of its own (a painting, a shadow) pairs
-// them one by one.
-#define gEXMatrixGroupTagged(cmd, id, proj)                                                                         \
+// them one by one. Vertices are blended only where a group asks (a shadow's).
+#define gEXMatrixGroupTaggedVerts(cmd, id, proj, verts)                                                             \
     gEXMatrixGroupDecomposed(cmd, id, G_EX_PUSH, proj, G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_INTERPOLATE,     \
                              G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_INTERPOLATE, G_EX_COMPONENT_INTERPOLATE, \
-                             G_EX_COMPONENT_SKIP, G_EX_COMPONENT_AUTO, G_EX_ORDER_LINEAR, G_EX_EDIT_NONE,         \
+                             verts, G_EX_COMPONENT_AUTO, G_EX_ORDER_LINEAR, G_EX_EDIT_NONE,                       \
                              G_EX_COMPONENT_SKIP, G_EX_COMPONENT_AUTO)
+#define gEXMatrixGroupTagged(cmd, id, proj) gEXMatrixGroupTaggedVerts(cmd, id, proj, G_EX_COMPONENT_SKIP)
 
 // The game's own functions this file calls that its headers leave out (rendering_graph_node.c's are static), by their
 // names in syms/.
@@ -95,12 +103,14 @@ void geo_process_generated_list(struct GraphNodeGenerated *node);
 void geo_process_background(struct GraphNodeBackground *node);
 void geo_process_master_list_sub(struct GraphNodeMasterList *node);
 
-// The game's DisplayListNode with the id after it: only the two functions here make and read these.
+// The game's DisplayListNode with the id after it, and whether its group blends vertices (a shadow's): only the two
+// functions here make and read these.
 struct TaggedDisplayListNode {
     Mtx *transform;
     void *displayList;
     struct TaggedDisplayListNode *next;
     u32 id;
+    u32 blendVertices;
 };
 
 static u32 sCutCount;
@@ -166,12 +176,16 @@ static void check_teleport(struct Object *obj) {
 
 static u32 display_list_id(void) {
     struct GraphNodeObject *obj = gCurGraphNodeObject;
+    struct GraphNode *tagNode = sTagNode;
     s32 i;
     if (gCurGraphNodeHeldObject != NULL && gCurGraphNodeHeldObject->objNode != NULL) {
         obj = &gCurGraphNodeHeldObject->objNode->header.gfx;
     }
+    if (tagNode != NULL && tagNode->parent != NULL && tagNode->parent->type == GRAPH_NODE_TYPE_SWITCH_CASE) {
+        tagNode = tagNode->parent;
+    }
     i = pool_index(obj);
-    return make_id((u32) sTagNode, (u32) obj + (i >= 0 ? sObjTeleports[i] : 0), sCutCount);
+    return make_id((u32) tagNode, (u32) obj + (i >= 0 ? sObjTeleports[i] : 0), sCutCount);
 }
 
 RECOMP_PATCH void geo_append_display_list(void *displayList, s16 layer) {
@@ -183,6 +197,7 @@ RECOMP_PATCH void geo_append_display_list(void *displayList, s16 layer) {
         listNode->displayList = displayList;
         listNode->next = 0;
         listNode->id = display_list_id();
+        listNode->blendVertices = sTagNode != NULL && sTagNode->type == GRAPH_NODE_TYPE_SHADOW;
         if (gCurGraphNodeMasterList->listHeads[layer] == 0) {
             gCurGraphNodeMasterList->listHeads[layer] = (struct DisplayListNode *) listNode;
         } else {
@@ -218,7 +233,8 @@ RECOMP_PATCH void geo_process_master_list_sub(struct GraphNodeMasterList *node) 
         if ((currList = (struct TaggedDisplayListNode *) node->listHeads[i]) != NULL) {
             gDPSetRenderMode(gDisplayListHead++, modeList->modes[i], mode2List->modes[i]);
             while (currList != NULL) {
-                gEXMatrixGroupTagged(gDisplayListHead++, currList->id, G_MTX_MODELVIEW);
+                gEXMatrixGroupTaggedVerts(gDisplayListHead++, currList->id, G_MTX_MODELVIEW,
+                                          currList->blendVertices ? G_EX_COMPONENT_INTERPOLATE : G_EX_COMPONENT_SKIP);
                 gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(currList->transform),
                           G_MTX_MODELVIEW | G_MTX_LOAD | G_MTX_NOPUSH);
                 gSPDisplayList(gDisplayListHead++, currList->displayList);
