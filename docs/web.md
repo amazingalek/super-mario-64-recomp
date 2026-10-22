@@ -85,7 +85,8 @@ Game Over in the first two courses. It was recorded in headless Chrome at 1256x6
 load a section; its header says what each section played, what it leaves out and the 20 shaders added by hand, which
 plays drew and the recordings missed. Chrome builds the whole list behind the
 launcher in about 7 s, so the game never waits. Firefox builds none there: it waits 2.7-3.7 s for the boot's section
-before the game's first frame, 1.6-2.2 s for the castle grounds' as file A starts, and 0.6 s for a course's as it starts.
+before the game's first frame, 1.5-2.2 s for the castle grounds' as file A starts, and 0.6-0.9 s for a course's as it
+starts.
 
 ## Every level
 
@@ -107,9 +108,8 @@ build. What it found:
   fading as he teleports in his Fire Sea fight (six), Mario with the vanish cap (two), the basement's and the second
   floor's rooms as Mario leaves Hazy Maze Cave and Tiny-Huge Island, and Dire, Dire Docks' floor into its second area.
   They are in the list (its header), and the same sections played on the page built with it miss none. In Firefox,
-  Bob-omb Battlefield played clean and the castle's first floor missed one more (in the list too), with no WebGPU
-  error and no exception; Firefox's other plays there stopped before the page did anything, as Firefox's own process
-  stopped answering on the host (N64Recomp-browser's docs/findings.md, A page that stops answering).
+  Bob-omb Battlefield, Bowser in the Dark World's fight and Tick Tock Clock played clean, and the castle's first floor
+  missed one more (in the list too), with no WebGPU error and no exception.
 - "PRESS START" over Rainbow Ride, the plan's: Mario's falls in its acts used up his lives, the Game Over went back to
   the title, whose demo plays a level, and the warp to the next act, taken from the demo, kept its input and its text.
   The plan gives Mario four lives at each act, and the survey warps only from a level that is played.
