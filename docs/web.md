@@ -67,7 +67,7 @@ Each ends with the game's own frame rate over its courses (`rate()`). Play them 
 
 ## The shader list
 
-`src/rt64_shaders.txt` holds 145 shaders, which RT64 builds as PIPELINES pipelines, in 18 sections of 290 lines (a shader is
+`src/rt64_shaders.txt` holds 145 shaders, which RT64 builds as 112 pipelines, in 18 sections of 290 lines (a shader is
 in each section that draws it): the boot's (the launcher, the logo, the title's Mario head, the file select), the castle
 grounds', the castle's and one for each of the 15 courses. It was recorded in headless Chrome at 1256x645 by
 `tools/record_shaders.sh`, a page load a section; its header says what each section played and what it leaves out. The
