@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
-# Records src/rt64_shaders.txt, the shaders the page builds before the game and as each mission starts, by code rather
+# Records src/rt64_shaders.txt, the shaders the page builds before the game and as each place starts, by code rather
 # than by playing: N64Recomp-browser's tools/record_shaders.mjs serves the page built in <build dir> (tools/build_web.sh's
 # build/web), drives it in headless Chrome through tools/shader_plan.json, a page load a section, in which
-# patches/shader_survey.c warps Mario into each course, and writes the list. Needs node 22 or later and Chrome. Then build
+# patches/shader_survey.c warps Mario into each place, and writes the list. Needs node 22 or later and Chrome. Then build
 # the page again, so that it prebuilds the new list.
 #
 #   bash tools/record_shaders.sh <build dir> <ROM> [--profile <dir>] [--port <n>] [--only <section>,...]
