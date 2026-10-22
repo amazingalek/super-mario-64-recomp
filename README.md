@@ -28,9 +28,10 @@ the game as it shipped.
   the fades and the wipes are sharp at any size.
 - **Hi-res text**, off by default (Hi-res Font On turns it on): the HUD's numbers and icons, the power meter, and the
   letters of the dialogs, the pause screen, the act select and the file select are drawn smooth at any size instead of
-  as the game's own pixel art, where at 4K each texel is a block of about 9×9 pixels. Nothing is shipped for it: the game upscales each of these textures four times
-  from your ROM (with xBRZ, a pixel-art scaler) the first time it draws it, and keeps the result in a `hires_font`
-  folder beside its settings, so a new letter shows as the original for one frame, once.
+  as the game's own pixel art, where at 4K each texel is a block of about 9×9 pixels. Nothing is shipped for it: the
+  game upscales each of these textures four times from your ROM (with xBRZ, a pixel-art scaler) the first time it draws
+  it, and keeps the result in a `hires_font` folder beside its settings, so a new letter shows as the original for one
+  frame, once.
 - **Smooth motion at the display's rate**: RT64 interpolates between the game's frames up to the monitor's refresh
   rate, 60 on a 60 Hz screen and more on a faster one, or at a rate set by hand. The game logic stays at 30, as on the
   console: Mario, the camera and every object move 30 times a second, and only what is drawn between is new.
