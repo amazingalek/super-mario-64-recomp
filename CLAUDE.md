@@ -56,6 +56,11 @@ This repo is the game: its recompilation, the patches over it, the desktop build
 - **Busy waits.** ultramodern runs one game thread at a time and preempts none, so a loop that waits for another
   game thread has to yield (`recomp_yield`). `wait_for_audio_frames`, where the game waits for the sound thread
   while it resets the audio, is the one met so far (`patches/audio.c`).
+- **Narrow arguments.** IDO narrows an s8, u8, s16 or u16 argument in the function that takes it, so the game's
+  callers pass whatever the register holds; clang's code assumes the caller narrowed it. A patch replacing a game
+  function whose caller passes a wider value takes that argument as an s32 and narrows it itself:
+  `create_skybox_facing_camera` gets the background node's word, the background twice, and indexed the sky's lists
+  with it otherwise (`patches/interpolation.c`).
 - **Stubs.** `us.toml` stubs three functions whose code doesn't recompile or calls what the runtime lacks: debug and
   never-called code, each with its reason there.
 - **The symbols.** The decomp's US build is IDO 5.3 at `-g`, so it is unoptimised. IDO writes no symbol for a static

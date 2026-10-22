@@ -16,7 +16,6 @@
 #include "game/save_file.h"
 #include "game/screen_transition.h"
 #include "game/segment2.h"
-#include "game/skybox.h"
 
 // RT64's interpolation to the display's rate (its Framerate Display). The game draws 30 frames a second; RT64 draws the
 // frames between two of them by pairing each matrix of the newer frame with one of the older and blending the two. Left
@@ -455,8 +454,16 @@ static Vtx *make_skybox_tile(s32 col, s32 row, s8 colorIndex) {
 // draw_skybox_tile_grid in one, with the wider grid and the unwrapped scroll. A tile's column is any whole number: its
 // texture is the column modulo 8, as the game's 10-column tile lists repeat their first 2 columns. A row out of the
 // image is left out: the scroll stops before one is on screen.
-RECOMP_PATCH Gfx *create_skybox_facing_camera(s8 player, s8 background, f32 fov, f32 posX, f32 posY, f32 posZ,
+//
+// player and background are s8 in the game (game/skybox.h, left out here for that reason) but taken as words and
+// narrowed here. IDO narrows a char or short argument in the function that takes it, so its callers pass whatever the
+// register holds: geo_skybox_main passes the background node's word, which holds the background twice
+// (init_graph_node_background), and clang's code leaves the narrowing to the caller, so it would index the sky's lists
+// with 0x40004 for background 4. Only background 0, the castle grounds' and Bob-omb Battlefield's sky, drew right.
+RECOMP_PATCH Gfx *create_skybox_facing_camera(s32 playerWord, s32 backgroundWord, f32 fov, f32 posX, f32 posY, f32 posZ,
                                               f32 focX, f32 focY, f32 focZ) {
+    s8 player = (s8) playerWord;
+    s8 background = (s8) backgroundWord;
     f32 cameraFaceX = focX - posX;
     f32 cameraFaceY = focY - posY;
     f32 cameraFaceZ = focZ - posZ;
