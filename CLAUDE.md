@@ -93,3 +93,17 @@ This repo is the game: its recompilation, the patches over it, the desktop build
   keeps Left Shift and adds X; an input the file leaves out keeps its default) and presses that.
 - **The game's own pacing**: 30 frames a second, two VIs a frame, triple-buffered. It yields its graphics task for
   audio (osSpTaskYield), which the runtime ignores.
+- **Interpolation to the display's rate** (RT64's Framerate Display, the default) is `patches/interpolation.c`: every
+  matrix the game draws is tagged with RT64's extended GBI so RT64 pairs each thing only with itself, and a camera cut,
+  a new area or an object that jumps more than 500 units in a frame gets new ids, so it is drawn as it is rather than
+  blended. Its header says what is tagged and why. Untagged, RT64 already blends most motion by guessing the pairs;
+  what the tags fix shows at the edges. A driven play of the desktop build at 60 Hz (the castle grounds, the castle's
+  front door, Bob-omb Battlefield's entry, a Goomba, a star spawned over Mario and its cutscene), captured from the
+  game's window about 60 times a second, against the same build without the tags:
+  - With the game at 30 and the screen at 60, each game frame's motion is two equal half steps, so every capture's
+    change matches a neighbour's. Untagged, 12 of 38 moving captures by the Goomba matched neither, 28 of 303 in the
+    star's cutscene and 10 of 338 in a full turn of the camera; tagged, none of them did.
+  - Untagged, the castle door flashes open for one frame as Mario reaches for it, and the camera's settling behind
+    Mario as he lands in Bob-omb Battlefield holds a frame and then jumps twice. Tagged, neither does.
+  - The skybox shows no uncovered edge through a full turn, and the door's star or circle wipe grows in half steps.
+    Colour fades (the fade from white into a course) step at 30 as on a console: RT64 blends geometry, not colour.

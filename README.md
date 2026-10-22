@@ -14,8 +14,9 @@ and menus): the game's own MIPS code translated to C and run natively, with RT64
 supply your own ROM, and nothing in git or CI is made from one except the symbol names and addresses in `syms/`.
 
 **Status:** the desktop build plays: sound (the audio microcode recompiled), saves (EEPROM, kept across restarts) and
-keyboard and gamepad input. Bob-omb Battlefield has been played from the file select through King Bob-omb's star and
-back to the castle. No web page yet.
+keyboard and gamepad input, drawn at the display's rate (the game runs at 30 and RT64 interpolates the frames between,
+with nothing smeared at camera cuts, warps or spawns). Bob-omb Battlefield has been played from the file select
+through King Bob-omb's star and back to the castle. No web page yet.
 
 ## Building
 
