@@ -78,3 +78,9 @@ extern "C" void recomp_get_reduced_input_lag(uint8_t* rdram, recomp_context* ctx
 extern "C" void recomp_get_lod_divisor(uint8_t* rdram, recomp_context* ctx) {
     _return<s32>(ctx, static_cast<s32>(sm64::level_of_detail_divisor()));
 }
+
+// recomp_get_draw_distance_scale(): how many times its own drawing distance an object is drawn out to, 1 for the
+// game's (patches/draw_distance.c).
+extern "C" void recomp_get_draw_distance_scale(uint8_t* rdram, recomp_context* ctx) {
+    _return<s32>(ctx, static_cast<s32>(sm64::draw_distance_scale()));
+}

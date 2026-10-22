@@ -145,6 +145,9 @@ the defaults first:
   page widescreen follows the canvas's shape, as Expand does a window's.
 - Input Lag: 343.0 and 79%, against 344.5 and 81%.
 - Level of Detail: 336.9 and 79%, against 338.4 and 79%.
+- Draw Distance: 333.8 and 86%, then 338.7 and 85%, against 333.1 and 89%, then 338.2 and 85% at Original (two pairs,
+  interleaved; the second High play started on a busy host). What it adds is a few objects drawn far away, small on
+  the screen.
 - Copy Frames to RAM: 343.5 and 80%, against 342.3 and 81%. The game never reads a frame back, so Off (the default)
   copies none.
 - MS Anti-Aliasing: 343.3 and 80%, against 345.5 and 79% with None.
