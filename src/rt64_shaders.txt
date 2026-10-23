@@ -38,8 +38,10 @@
 # the default (its tiles' wrap, where On clamps them: a text shader is in the list both ways). At the end of their own
 # sections, those of a play of every level with shots: Bowser in the Fire Sea's six (Bowser fading as he teleports), one
 # each in the basement and the second floor as Mario leaves Hazy Maze Cave and Tiny-Huge Island, one at Dire, Dire
-# Docks' floor into its second area, and one of the castle's first floor in Firefox; and one of the regular plan's
-# Bob-omb Battlefield in Firefox.
+# Docks' floor into its second area, and one of the castle's first floor in Firefox; one of the regular plan's Bob-omb
+# Battlefield in Firefox; and the nine of tools/play_plan_full.json's play of the whole game in Chrome: one in Whomp's
+# Fortress (in the last Bowser's section too, as the credits draw it), four at the start of Hazy Maze Cave (one in
+# Rainbow Ride's too, which drew it in a trial), and four of the ending and the credits in the last Bowser's.
 00552078 00882c3f fc127e24 fffff9fc 088a000c
 00552078 00882c3f fcffffff fffe793c 0800000c
 005041c8 00882c3f fcffffff fffcfa7d 0ccb540c
@@ -171,6 +173,7 @@ section wf
 005041c9 00a00c3f fcffffff fffcf279 04cb540b
 00552048 00880c3f fcffffff fffe793c 0800000c
 00552078 00882c3f fc121824 ff33ffff 0ccb540c
+00504dd8 00882c3f fc121824 ff33ffff 0aaaaa0c
 section jrb
 005049d8 00882c3f fcffffff fffe7b3d 0800000c
 c8112078 00982c3f fc127fff fffff838 088a000c
@@ -294,6 +297,10 @@ c8113078 00982c3f fcffffff fffcf238 088a0008
 00443078 00882c3f fcffffff fffcf279 0ccb5408
 00443078 00882c3f fc121824 ff33ffff 0ccb5400
 00552078 00882c3f fcffffff fffcfa7d 088a000c
+c8112078 00982c3f fc127fff fffff838 099b1004
+c8112078 00982c3f fc127fff fffff838 0ccb5404
+c8112078 00982c3f fcffffff fffe7838 08000004
+00552d58 00882c3f fc127e24 fffff9fc 0ccb5404
 section lll
 005049d8 00882c3f fcffffff fffe7b3d 0800000c
 00552078 00882c3f fc127e24 fffff9fc 099b1004
@@ -531,6 +538,7 @@ section rr
 0f0a7008 00880c3f fcffffff fffcf279 0ccb540c
 005049d8 00882c3f fc121824 ff33ffff 0ccb5408
 00553078 00882c3f fcffffff fffcf279 088a0008
+00552d58 00882c3f fc127e24 fffff9fc 0ccb5404
 section bits
 005049d8 00882c3f fc121824 ff33ffff 0ccb540c
 c8112078 00982c3f fc127fff fffff838 088a000c
@@ -557,3 +565,8 @@ section bowser3
 00553078 00882c3f fcffffff fffcf279 0ccb5400
 005049d8 00882c3f fc121824 ff33ffff 0ccb540c
 00552078 00882c3f fcffffff fffe7b3d 08000008
+00504dd8 00882c3f fc121824 ff33ffff 0aaaaa0c
+00442078 00882c3f fc127e24 fffff9fc 099b1008
+c81049d8 00982c3f fc127fff fffffa38 088a000c
+004049d8 00882c3f fcffffff fffe7b3d 0800000c
+004049d8 00882c3f fcffffff fffe7b3d 08000004
