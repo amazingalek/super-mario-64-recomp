@@ -19,7 +19,7 @@ with nothing smeared at camera cuts, warps or spawns). Bob-omb Battlefield has b
 through King Bob-omb's star and back to the castle. It also builds into a web page (Chrome and Firefox, through WebGPU)
 that plays the same.
 
-**The web page plays at [amazingalek.github.io/super-mario-64-recomp](https://amazingalek.github.io/super-mario-64-recomp/)**,
+**The web page plays at [n64hub.com/super-mario-64](https://n64hub.com/super-mario-64/)**,
 from your own ROM through its Load ROM ([docs/web.md](docs/web.md)).
 
 ## Modern enhancements
@@ -108,7 +108,7 @@ The symbols in `syms/` are made from the decomp's own build of the game (`tools/
 and Docker, then `tools/gen_syms.sh`). They only change when `lib/sm64` moves.
 
 The web page is built on Linux with Docker by `tools/build_web.sh`, through
-[N64Recomp-browser](https://github.com/amazingalek/N64Recomp-browser) in `lib/N64Recomp-browser`:
+[N64Recomp-browser](https://github.com/n64hub/N64Recomp-browser) in `lib/N64Recomp-browser`:
 [docs/web.md](docs/web.md) says how, and how to serve and play it.
 
 ## License

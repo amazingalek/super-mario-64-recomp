@@ -12,7 +12,7 @@ game a page, `tools/build_web.sh`, the prebuilt shader list (`src/rt64_shaders.t
 (`tools/play_plan.json`, `tools/play_plan_extended.json`) and the survey that drives them all
 (`patches/shader_survey.c`, `tools/shader_survey.js`). The rest is N64Recomp-browser's: `docs/porting.md` (WebGPU and
 the shaders, prebuilt shader lists, Emscripten), `docs/playing.md` (playing and measuring a page), `docs/forks.md` and
-`docs/findings.md`. The page plays at [amazingalek.github.io/super-mario-64-recomp](https://amazingalek.github.io/super-mario-64-recomp/),
+`docs/findings.md`. The page plays at [n64hub.com/super-mario-64](https://n64hub.com/super-mario-64/),
 published by N64Recomp-browser's `tools/publish_pages.sh`, and every play of it is a line in N64Recomp-browser's
 `plays.jsonl` (game `sm64`).
 
