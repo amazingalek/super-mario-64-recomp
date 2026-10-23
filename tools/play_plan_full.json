@@ -3202,8 +3202,8 @@
   ["wait", 15000],
   ["shot", "credits_10.png"],
   ["eval", "'credits: level ' + level()"],
-  ["need", "untilLevel(25, 300000)"],
-  ["wait", 15000],
+  ["need", "level() === 16"],
+  ["wait", 40000],
   ["shot", "the_end.png"],
   ["eval", "rate()"]
  ]
