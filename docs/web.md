@@ -89,7 +89,7 @@ It missed nine shaders, now in the list (its header).
 
 ## The shader list
 
-`src/rt64_shaders.txt` holds 198 shaders, which RT64 builds as PIPELINES pipelines, in 34 sections (a shader is in each
+`src/rt64_shaders.txt` holds 198 shaders, which RT64 builds as 147 pipelines, in 34 sections (a shader is in each
 section that draws it): the boot's (the launcher, the logo, the title's Mario head, the file select), the castle
 grounds', and one for each place in about the order a player meets it: the castle's floors room by room, the
 courtyard, the 15 courses at the start of each of their first six acts and in their other areas, the secret stages,
