@@ -19,6 +19,9 @@
 # zip carries SDL2.dll, and is a .tar.gz so the binary stays executable. GTK 3, FreeType and a Vulkan driver are the
 # system's. Run from another folder, the program works from its own (src/main/main.cpp).
 # Both hold assets/ (the launcher's), recompcontrollerdb.txt and COPYING beside the program.
+# v0.1.0's Linux archive was checked by running it in distribution containers under Xvfb with Mesa's software Vulkan
+# (lavapipe), from another folder, the ROM stored beside it, --boot: on Ubuntu 24.04 and Debian 12 it drew the title's
+# Mario head for 2 minutes. No Linux GPU has run it.
 set -euo pipefail
 ROOT=$(cd "$(dirname "$0")/.." && pwd)
 cd "$ROOT"
