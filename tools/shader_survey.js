@@ -24,6 +24,10 @@
 // for Mario before its dialog and his key (the decomp's bowser_dead_wait_for_mario); die(lives), invincibility off and
 // Mario's health gone, with that many lives left (0 for the Game Over). Addresses are the US 1.0 game's
 // (syms/sm64.us.datasyms.toml).
+//
+// For tools/play_plan_full.json, which plays the whole game: star(n, ms), a star of the course playing with index n - 1
+// (act n's) put where Mario stands, which he collects as a player does; it resolves true once the game has put it
+// there, false after ms.
 (() => {
   const magic = (a) => n64r(a) === 0x534d3634 && n64r(a + 4) === 0x53525659;
   if (!window.__survey) {
@@ -61,6 +65,12 @@
   window.rate = () => {
     const [frames, ms] = [window.clock() - window.__mark[0], performance.now() - window.__mark[1]];
     return `${frames} game frames in ${(ms / 1000).toFixed(1)} s: ${(frames * 1000 / ms).toFixed(1)} a second`;
+  };
+  window.star = async (n, ms) => {
+    n64w(s + 52, n);
+    const end = Date.now() + ms;
+    while (n64r(s + 52) !== 0 && Date.now() < end) await sleep(100);
+    return n64r(s + 52) === 0;
   };
   window.setInvincible = () => { n64w(s + 28, 1); return 'level ' + window.level(); };
   const rb = (a) => (n64r(a & ~3) >>> ((3 - (a & 3)) * 8)) & 0xff;
