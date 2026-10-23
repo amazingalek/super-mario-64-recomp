@@ -5,8 +5,8 @@
 > don't take AI-written code.
 
 A native PC port of the N64 *Super Mario 64* (USA), made by static recompilation
-([N64Recomp](https://github.com/N64Recomp/N64Recomp) + [N64ModernRuntime](https://github.com/N64Recomp/N64ModernRuntime)
-+ [RT64](https://github.com/rt64/rt64), with [RecompFrontend](https://github.com/N64Recomp/RecompFrontend)'s launcher
+([N64Recomp](https://github.com/N64Recomp/N64Recomp) + [N64ModernRuntime](https://github.com/N64Recomp/N64ModernRuntime) +
+[RT64](https://github.com/rt64/rt64), with [RecompFrontend](https://github.com/N64Recomp/RecompFrontend)'s launcher
 and menus): the game's own MIPS code translated to C and run natively, with RT64 drawing it. The symbols come from the
 [n64decomp/sm64](https://github.com/n64decomp/sm64) decompilation. It is not an emulator.
 
