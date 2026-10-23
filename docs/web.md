@@ -58,8 +58,9 @@ says each field. It does nothing unless a script asks.
 
 For what a player meets past a course's start, `tools/shader_survey.js` also writes the game's memory from the page:
 every course's stars and the save's doors and caps, the act an act select takes, Mario's position and lives, Mario put
-on a star, a key or the grand star, and a Bowser beaten (his death set, Mario beside him). Those are for recording and
-finding only: the play plans reach their levels as a player does. Only the warps a door or a painting makes are safe:
+on a star, a key or the grand star, and a Bowser beaten (his death set, Mario beside him), and the game puts an act's
+star where Mario stands (`star(n)`). Those are for recording and finding only: the regular plans reach their levels as
+a player does, and the whole-game plan (The plans) takes its stars and beats its Bowsers with them. Only the warps a door or a painting makes are safe:
 a warp to a death exit in the area Mario is in, the castle's Bowser in the Dark World exit from Peach's slide, or the
 courtyard's Big Boo's Haunt exit from the castle grounds crashes the game, on the desktop too, and a warp to a castle
 door's own node (the castle from its front door, the courtyard from its castle door) leaves Mario in a room the game
@@ -75,15 +76,26 @@ minutes 40) goes on to Whomp's Fortress, Jolly Roger Bay and Cool, Cool Mountain
 Each ends with the game's own frame rate over its courses (`rate()`). Play them with N64Recomp-browser's
 `tools/play_page.mjs` (its `docs/playing.md`).
 
+`tools/play_plan_full.json` (about 56 minutes) plays the whole game, for finding what the regular plans never reach,
+not for every change: every course's six acts, the secret stages' stars and the three Bowser stages in about the order
+a player meets them, then the ending to the end of the credits and the cake. Each act is warped into as its painting
+does, its act picked, about 12 s of it played from where it starts Mario, and its star, put where he stands, collected
+as a player does (the dance, the course's end, the save dialog); each Bowser is beaten and his key or the grand star
+taken. Its header says how. Played once in headless Chrome on a desktop GPU at 1256x645, a whole GPU turn
+(N64Recomp-browser's `plays.jsonl`), it took all 97 stars, the three Bowsers, the ending and the credits with no
+WebGPU error and no exception, the game at 29.7 frames a second over the 54 minutes, its loads included. Its 115 shots
+draw right. Its frame gaps over 100 ms (294, none over 250) came one a level load, as the game stops its music for it.
+It missed nine shaders, now in the list (its header).
+
 ## The shader list
 
-`src/rt64_shaders.txt` holds 189 shaders, which RT64 builds as 141 pipelines, in 34 sections (a shader is in each
+`src/rt64_shaders.txt` holds 198 shaders, which RT64 builds as PIPELINES pipelines, in 34 sections (a shader is in each
 section that draws it): the boot's (the launcher, the logo, the title's Mario head, the file select), the castle
 grounds', and one for each place in about the order a player meets it: the castle's floors room by room, the
 courtyard, the 15 courses at the start of each of their first six acts and in their other areas, the secret stages,
 and the three Bowser stages with their fights, keys, the grand star and the ending, with a star's dance, a death and the
 Game Over in the first two courses. It was recorded in headless Chrome at 1256x645 by `tools/record_shaders.sh`, a page
-load a section; its header says what each section played, what it leaves out and the 20 shaders added by hand, which
+load a section; its header says what each section played, what it leaves out and the 29 shaders added by hand, which
 plays drew and the recordings missed. Chrome builds the whole list behind the
 launcher in about 7 s, so the game never waits. Firefox builds none there: it waits 2.7-3.7 s for the boot's section
 before the game's first frame, 1.5-2.2 s for the castle grounds' as file A starts, and 0.6-0.9 s for a course's as it

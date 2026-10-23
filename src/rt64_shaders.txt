@@ -38,8 +38,10 @@
 # the default (its tiles' wrap, where On clamps them: a text shader is in the list both ways). At the end of their own
 # sections, those of a play of every level with shots: Bowser in the Fire Sea's six (Bowser fading as he teleports), one
 # each in the basement and the second floor as Mario leaves Hazy Maze Cave and Tiny-Huge Island, one at Dire, Dire
-# Docks' floor into its second area, and one of the castle's first floor in Firefox; and one of the regular plan's
-# Bob-omb Battlefield in Firefox.
+# Docks' floor into its second area, and one of the castle's first floor in Firefox; one of the regular plan's Bob-omb
+# Battlefield in Firefox; and the nine of tools/play_plan_full.json's play of the whole game in Chrome: one in Whomp's
+# Fortress (in the last Bowser's section too, as the credits draw it), four at the start of Hazy Maze Cave (one in
+# Rainbow Ride's too, which drew it in a trial), and four of the ending and the credits in the last Bowser's.
 00552078 00882c3f fc127e24 fffff9fc 088a000c
 00552078 00882c3f fcffffff fffe793c 0800000c
 005041c8 00882c3f fcffffff fffcfa7d 0ccb540c
