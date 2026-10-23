@@ -289,11 +289,13 @@ if (WIN32)
             "${CMAKE_SOURCE_DIR}/lib/rt64/src/contrib/dxc/bin/x64/dxcompiler.dll"
             $<TARGET_FILE_DIR:SuperMario64Recompiled>)
 
+    # A dev build (Debug, RelWithDebInfo) opens a console beside the window for its log; Release, which
+    # tools/release.sh builds for players, is a windowed program only.
     set_target_properties(
         SuperMario64Recompiled
         PROPERTIES
             LINK_FLAGS_DEBUG "/SUBSYSTEM:CONSOLE"
-            LINK_FLAGS_RELEASE "/SUBSYSTEM:CONSOLE"
+            LINK_FLAGS_RELEASE "/SUBSYSTEM:WINDOWS /ENTRY:mainCRTStartup"
             LINK_FLAGS_RELWITHDEBINFO "/SUBSYSTEM:CONSOLE"
             LINK_FLAGS_MINSIZEREL "/SUBSYSTEM:WINDOWS /ENTRY:mainCRTStartup"
     )

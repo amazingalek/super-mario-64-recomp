@@ -83,6 +83,14 @@ Left out, because it would change how the game plays:
 Not options, because they don't change the game: the keyboard and gamepad layouts (Controls), which are RecompFrontend's
 defaults: WASD or the left stick for the stick, the arrows or the right stick for the C buttons.
 
+## Getting it
+
+Releases for Windows (a zip: unzip it and run `SuperMario64Recompiled.exe` from that folder) and Linux on x86-64 (a
+`.tar.gz`: extract it and run `SuperMario64Recompiled` in that folder) are on the
+[Releases page](https://github.com/n64hub/super-mario-64-recomp/releases), without the ROM: pick yours with Load ROM.
+The Linux build needs glibc 2.35 or newer (Ubuntu 22.04, Debian 12 or later), a Vulkan driver, and GTK 3 and FreeType,
+which desktop distributions have; it brings its own SDL2. Or build it as below.
+
 ## Building
 
 You need Super Mario 64 (USA), SHA-1 `9bef1128717f958171a4afac3ed78ee2bb4e86ce`, as a big-endian `.z64`, at
@@ -106,6 +114,10 @@ ninja -C build SuperMario64Recompiled
 
 The symbols in `syms/` are made from the decomp's own build of the game (`tools/build_decomp.sh`, which needs the ROM
 and Docker, then `tools/gen_syms.sh`). They only change when `lib/sm64` moves.
+
+A release is built by `tools/release.sh`: `windows` (Git Bash) and `linux` (Linux with Docker) build and pack its
+two archives into `out/` from the same commit of `main`, and `publish` publishes them as the GitHub release
+`v<version_string>` (`src/main/main.cpp`) with `releases/v<version>.md` as its notes (the script's header says more).
 
 The web page is built on Linux with Docker by `tools/build_web.sh`, through
 [N64Recomp-browser](https://github.com/n64hub/N64Recomp-browser) in `lib/N64Recomp-browser`:

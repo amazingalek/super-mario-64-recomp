@@ -36,7 +36,8 @@ This repo is the game: its recompilation, the patches over it, the desktop build
   logo, character or picture from the game.
 - The decomp is built only where the ROM is, never in CI.
 - The page is built where the ROM is and published to this repo's Pages (`gh-pages`) by N64Recomp-browser's
-  `tools/publish_pages.sh` (its `docs/publishing.md`), its `.data` holding nothing from the ROM. There are no releases.
+  `tools/publish_pages.sh` (its `docs/publishing.md`), its `.data` holding nothing from the ROM. The desktop releases are built where the ROM is too, by
+  `tools/release.sh` (its header says how), and published to GitHub Releases with their notes in `releases/`.
 - The scope is the game as it plays, plus what a web page needs (RT64 interpolation to the display's rate, resolution
   Auto), plus the README's Modern enhancements: each an option with an Original value that plays as the console does,
   none changing how the game plays. No camera changes, cheats or 60 fps logic. USA 1.0 only.
