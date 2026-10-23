@@ -9,6 +9,7 @@
 #include <string>
 #include <stdexcept>
 #include <cinttypes>
+#include <filesystem>
 
 #ifndef __EMSCRIPTEN__
 #include "nfd.h" // a browser has no native file dialogs; RecompFrontend asks the page instead
@@ -421,6 +422,21 @@ int main(int argc, char** argv) {
         return EXIT_FAILURE;
     }
 
+#if defined(__linux__) && !defined(__EMSCRIPTEN__)
+    // RecompFrontend finds assets/ (and portable.txt) in the working directory, which a desktop launcher or a shell
+    // elsewhere doesn't set to the release's folder: when assets/ isn't there, work from the program's own folder.
+    // A dev build run from the repo's root keeps the root, which is where assets/ is.
+    {
+        std::error_code ec;
+        if (!std::filesystem::is_directory("assets", ec)) {
+            std::filesystem::path exe_dir = std::filesystem::read_symlink("/proc/self/exe", ec).parent_path();
+            if (!ec && std::filesystem::is_directory(exe_dir / "assets", ec)) {
+                std::filesystem::current_path(exe_dir, ec);
+            }
+        }
+    }
+#endif
+
 #ifdef _WIN32
     timeBeginPeriod(1);
     SetConsoleOutputCP(CP_UTF8);
@@ -514,7 +530,8 @@ int main(int argc, char** argv) {
     auto texture_pack_content_type_id = recomp::mods::register_mod_content_type(texture_pack_content_type);
     recomp::mods::register_mod_container_type("rtz", std::vector{ texture_pack_content_type_id }, false);
 
-    recomp::Configuration cfg;
+    // Value-initialized: the runtime calls create_window only while cfg.window_handle is empty.
+    recomp::Configuration cfg{};
     cfg.project_version = project_version;
     cfg.rsp_callbacks = rsp_callbacks;
     cfg.renderer_callbacks = renderer_callbacks;
